@@ -1,3 +1,0 @@
-set(__QT_DEPLOY_TARGET_appLogin_wifi_FILE C:/Users/a/Desktop/Code/C/QT/Login_wifi/build/Release/appLogin_wifi.exe)
-set(__QT_DEPLOY_TARGET_appLogin_wifi_TYPE EXECUTABLE)
-set(__QT_DEPLOY_TARGET_appLogin_wifi_RUNTIME_DLLS F:/APP/QT/6.10.1/mingw_64/bin/Qt6Quick.dll;F:/APP/QT/6.10.1/mingw_64/bin/Qt6OpenGL.dll;F:/APP/QT/6.10.1/mingw_64/bin/Qt6Gui.dll;F:/APP/QT/6.10.1/mingw_64/bin/Qt6QmlMeta.dll;F:/APP/QT/6.10.1/mingw_64/bin/Qt6QmlModels.dll;F:/APP/QT/6.10.1/mingw_64/bin/Qt6QmlWorkerScript.dll;F:/APP/QT/6.10.1/mingw_64/bin/Qt6Qml.dll;F:/APP/QT/6.10.1/mingw_64/bin/Qt6Network.dll;F:/APP/QT/6.10.1/mingw_64/bin/Qt6Core.dll)

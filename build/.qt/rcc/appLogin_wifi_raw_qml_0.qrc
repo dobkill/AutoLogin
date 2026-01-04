@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/qt/qml/Login_wifi/">
-    <file alias="Main.qml">C:/Users/a/Desktop/Code/C/QT/Login_wifi/Main.qml</file>
-  </qresource>
-</RCC>
-

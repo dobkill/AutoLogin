@@ -1,6 +1,0 @@
-module Login_wifi
-typeinfo appLogin_wifi.qmltypes
-prefer :/qt/qml/Login_wifi/
-Main 254.0 Main.qml
-depends QtQuick
-
