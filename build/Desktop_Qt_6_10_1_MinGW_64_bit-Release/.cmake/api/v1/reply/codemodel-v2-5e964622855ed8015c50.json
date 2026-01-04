@@ -1,0 +1,205 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-bd8be5f8431a8c0bbf6b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Login_wifi",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "all_aotstats::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_aotstats-Release-8b10cdd8fd24985fd97f.json",
+					"name" : "all_aotstats",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint-Release-3e9e6e2e9336948d7caf.json",
+					"name" : "all_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_json-Release-75590dbef86b8a8a1e88.json",
+					"name" : "all_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_module-Release-ea9ca6d8b9bfcdd801ea.json",
+					"name" : "all_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmltyperegistrations::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmltyperegistrations-Release-0faa5a1c94ee4d8429a2.json",
+					"name" : "all_qmltyperegistrations",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appLogin_wifi::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appLogin_wifi-Release-fdb91ea0ad35d0d9ebe2.json",
+					"name" : "appLogin_wifi",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appLogin_wifi_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appLogin_wifi_autogen-Release-1c0e4b32fcedf6902bfc.json",
+					"name" : "appLogin_wifi_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appLogin_wifi_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appLogin_wifi_autogen_timestamp_deps-Release-feb7b6571673c39b2625.json",
+					"name" : "appLogin_wifi_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appLogin_wifi_copy_qml::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appLogin_wifi_copy_qml-Release-64263b5de91322412c1c.json",
+					"name" : "appLogin_wifi_copy_qml",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appLogin_wifi_copy_res::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appLogin_wifi_copy_res-Release-d5430b7b727b3647f9c5.json",
+					"name" : "appLogin_wifi_copy_res",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appLogin_wifi_qmlimportscan::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appLogin_wifi_qmlimportscan-Release-3bcf4bae363fd503a426.json",
+					"name" : "appLogin_wifi_qmlimportscan",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appLogin_wifi_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appLogin_wifi_qmllint-Release-ce6f1b75d0facf2aa0de.json",
+					"name" : "appLogin_wifi_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appLogin_wifi_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appLogin_wifi_qmllint_json-Release-8adb847ba9ae5ef87ba2.json",
+					"name" : "appLogin_wifi_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appLogin_wifi_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appLogin_wifi_qmllint_module-Release-37bae99dbbcd6f19ff74.json",
+					"name" : "appLogin_wifi_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appLogin_wifi_qmltyperegistration::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appLogin_wifi_qmltyperegistration-Release-a63e338d83df4955d88d.json",
+					"name" : "appLogin_wifi_qmltyperegistration",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "generate_qmlls_build_ini_file::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-generate_qmlls_build_ini_file-Release-223993e90bec44d91b7e.json",
+					"name" : "generate_qmlls_build_ini_file",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "module_appLogin_wifi_aotstats_target::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-module_appLogin_wifi_aotstats_target-Release-01708f10032f26a305b9.json",
+					"name" : "module_appLogin_wifi_aotstats_target",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/a/Desktop/Code/C/QT/Login_wifi/build/Desktop_Qt_6_10_1_MinGW_64_bit-Release",
+		"source" : "C:/Users/a/Desktop/Code/C/QT/Login_wifi"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

@@ -1,0 +1,14 @@
+-rootPath
+C:/Users/a/Desktop/Code/C/QT/Login_wifi
+-cmake-output
+-output-file
+C:/Users/a/Desktop/Code/C/QT/Login_wifi/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/.qt/qml_imports/appLogin_wifi_build.cmake
+-importPath
+C:/Users/a/Desktop/Code/C/QT/Login_wifi/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/Login_wifi
+-importPath
+C:/Users/a/Desktop/Code/C/QT/Login_wifi/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug
+-importPath
+F:/APP/QT/6.10.1/mingw_64/qml
+-qrcFiles
+C:/Users/a/Desktop/Code/C/QT/Login_wifi/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/.qt/rcc/qmake_Login_wifi.qrc
+C:/Users/a/Desktop/Code/C/QT/Login_wifi/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/.qt/rcc/appLogin_wifi_raw_qml_0.qrc

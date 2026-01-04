@@ -1,0 +1,10 @@
+-I
+C:/Users/a/Desktop/Code/C/QT/Login_wifi/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug
+-I
+F:/APP/QT/6.10.1/mingw_64/qml
+--resource
+C:/Users/a/Desktop/Code/C/QT/Login_wifi/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/.qt/rcc/qmake_Login_wifi.qrc
+--resource
+C:/Users/a/Desktop/Code/C/QT/Login_wifi/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/.qt/rcc/appLogin_wifi_raw_qml_0.qrc
+--module
+Login_wifi
