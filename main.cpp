@@ -87,30 +87,30 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
     
-    // 判断是否包含 --auto-login 参数
-    bool autoLogin = false;
-    for (int i = 0; i < argc; ++i) {
-        if (QString(argv[i]) == "--auto-login") {
-            autoLogin = true;
-            break;
-        }
-    }
+    // // 判断是否包含 --auto-login 参数
+    // bool autoLogin = false;
+    // for (int i = 0; i < argc; ++i) {
+    //     if (QString(argv[i]) == "--auto-login") {
+    //         autoLogin = true;
+    //         break;
+    //     }
+    // }
 
 
     // 加载 QML 文件
     engine.loadFromModule("Login_wifi", "Main");
 
-      // 如果存在 --auto-login 参数，隐藏 QML 窗体，并设置 1 分钟后退出程序
-    if (autoLogin) {
-        // 获取根对象，隐藏 QML 窗体
-        QObject *rootObject = engine.rootObjects().first();
-        QQuickItem *item = qobject_cast<QQuickItem *>(rootObject);
-        if (item) {
-            item->setVisible(false); // 隐藏 QML 窗体
-        }
-        // 设置定时器，1 分钟后退出程序
-        QTimer::singleShot(60000, &app, &QCoreApplication::quit); // 1 分钟后退出
-    }
+    //   // 如果存在 --auto-login 参数，隐藏 QML 窗体，并设置 1 分钟后退出程序
+    // if (autoLogin) {
+    //     // 获取根对象，隐藏 QML 窗体
+    //     QObject *rootObject = engine.rootObjects().first();
+    //     QQuickItem *item = qobject_cast<QQuickItem *>(rootObject);
+    //     if (item) {
+    //         item->setVisible(false); // 隐藏 QML 窗体
+    //     }
+    //     // 设置定时器，1 分钟后退出程序
+    //     QTimer::singleShot(60000, &app, &QCoreApplication::quit); // 1 分钟后退出
+    // }
     
     // 创建定时器，每1秒执行一次 setAutoStartStatus 函数
     QTimer *timer = new QTimer(&app);
