@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/qt/qml/Login_wifi">
-    <file alias="qmldir">C:/Users/a/Desktop/Code/AutoLogin/build/Login_wifi/qmldir</file>
-  </qresource>
-</RCC>
-
