@@ -1,0 +1,182 @@
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\AA614FDA67FB8F21A4259038EE8CA26D\QT6APPAUTOLOGIN_METATYPES.JSON.GEN.RULE
+setlocal
+F:\APP\Qt\6.11.1\msvc2022_64\bin\moc.exe -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/meta_types/qt6appautologin_metatypes.json.gen --collect-json @C:/Users/a/Desktop/Code/Qt/AutoLogin/build/meta_types/appAutoLogin_json_file_list.txt
+if %errorlevel% neq 0 goto :cmEnd
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E copy_if_different C:/Users/a/Desktop/Code/Qt/AutoLogin/build/meta_types/qt6appautologin_metatypes.json.gen C:/Users/a/Desktop/Code/Qt/AutoLogin/build/meta_types/qt6appautologin_metatypes.json
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\AA614FDA67FB8F21A4259038EE8CA26D\QT6APPAUTOLOGIN_METATYPES.JSON.RULE
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E touch C:/Users/a/Desktop/Code/Qt/AutoLogin/build/meta_types/qt6appautologin_metatypes.json
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\9384C14EF4BCA10333D7003F0F9F576B\APPAUTOLOGIN_QMLTYPEREGISTRATIONS.CPP.RULE
+setlocal
+call .qt\bin\qt_setup_tool_path.bat F:/APP/Qt/6.11.1/msvc2022_64/bin/qmltyperegistrar.exe --generate-qmltypes=C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin/appAutoLogin.qmltypes --import-name=AutoLogin --major-version=1 --minor-version=0 @C:/Users/a/Desktop/Code/Qt/AutoLogin/build/qmltypes/appAutoLogin_foreign_types.txt -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/appautologin_qmltyperegistrations.cpp C:/Users/a/Desktop/Code/Qt/AutoLogin/build/meta_types/qt6appautologin_metatypes.json
+if %errorlevel% neq 0 goto :cmEnd
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E make_directory C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/qmltypes
+if %errorlevel% neq 0 goto :cmEnd
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E touch C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/qmltypes/appAutoLogin.qmltypes
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\E8B85ED1452D56D5D477DC633BD5EBBD\QRC_QMAKE_AUTOLOGIN.CPP.RULE
+setlocal
+F:\APP\Qt\6.11.1\msvc2022_64\bin\rcc.exe --output C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qrc_qmake_AutoLogin.cpp --name qmake_AutoLogin C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qmake_AutoLogin.qrc --no-zstd
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\5CE048BA7750008F9BBCBC2ECBBB8C62\APPAUTOLOGIN_QMLCACHE_LOADER.CPP.RULE
+setlocal
+call .qt\bin\qt_setup_tool_path.bat F:/APP/Qt/6.11.1/msvc2022_64/bin/qmlcachegen.exe --resource-name qmlcache_appAutoLogin -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_qmlcache_loader.cpp @C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_qml_loader_file_list.rsp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\E538D2229B1453F90B8ABFF44C199742\MAIN_QML.CPP.RULE
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E make_directory C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml
+if %errorlevel% neq 0 goto :cmEnd
+call .qt\bin\qt_setup_tool_path.bat F:/APP/Qt/6.11.1/msvc2022_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/AutoLogin/src/qml/Main.qml -I C:/Users/a/Desktop/Code/Qt/AutoLogin/build -I F:/APP/Qt/6.11.1/msvc2022_64/qml -i C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin/qmldir --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qmake_AutoLogin.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=AutoLogin(appAutoLogin) -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/Main_qml.cpp C:/Users/a/Desktop/Code/Qt/AutoLogin/src/qml/Main.qml
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\1F30E11313576E2CB9AA9A952EBA32ED\APPSIDEBAR_QML.CPP.RULE
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E make_directory C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/components
+if %errorlevel% neq 0 goto :cmEnd
+call .qt\bin\qt_setup_tool_path.bat F:/APP/Qt/6.11.1/msvc2022_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/AutoLogin/src/qml/components/AppSidebar.qml -I C:/Users/a/Desktop/Code/Qt/AutoLogin/build -I F:/APP/Qt/6.11.1/msvc2022_64/qml -i C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin/qmldir --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qmake_AutoLogin.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=AutoLogin(appAutoLogin) -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/components/AppSidebar_qml.cpp C:/Users/a/Desktop/Code/Qt/AutoLogin/src/qml/components/AppSidebar.qml
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\1F30E11313576E2CB9AA9A952EBA32ED\APPHEADER_QML.CPP.RULE
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E make_directory C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/components
+if %errorlevel% neq 0 goto :cmEnd
+call .qt\bin\qt_setup_tool_path.bat F:/APP/Qt/6.11.1/msvc2022_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/AutoLogin/src/qml/components/AppHeader.qml -I C:/Users/a/Desktop/Code/Qt/AutoLogin/build -I F:/APP/Qt/6.11.1/msvc2022_64/qml -i C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin/qmldir --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qmake_AutoLogin.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=AutoLogin(appAutoLogin) -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/components/AppHeader_qml.cpp C:/Users/a/Desktop/Code/Qt/AutoLogin/src/qml/components/AppHeader.qml
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\74BC363D5F64BDC905C7F577F4D399F7\HOMEPAGE_QML.CPP.RULE
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E make_directory C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/pages
+if %errorlevel% neq 0 goto :cmEnd
+call .qt\bin\qt_setup_tool_path.bat F:/APP/Qt/6.11.1/msvc2022_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/AutoLogin/src/qml/pages/HomePage.qml -I C:/Users/a/Desktop/Code/Qt/AutoLogin/build -I F:/APP/Qt/6.11.1/msvc2022_64/qml -i C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin/qmldir --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qmake_AutoLogin.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=AutoLogin(appAutoLogin) -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/pages/HomePage_qml.cpp C:/Users/a/Desktop/Code/Qt/AutoLogin/src/qml/pages/HomePage.qml
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\74BC363D5F64BDC905C7F577F4D399F7\SITEMANAGERPAGE_QML.CPP.RULE
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E make_directory C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/pages
+if %errorlevel% neq 0 goto :cmEnd
+call .qt\bin\qt_setup_tool_path.bat F:/APP/Qt/6.11.1/msvc2022_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/AutoLogin/src/qml/pages/SiteManagerPage.qml -I C:/Users/a/Desktop/Code/Qt/AutoLogin/build -I F:/APP/Qt/6.11.1/msvc2022_64/qml -i C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin/qmldir --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qmake_AutoLogin.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=AutoLogin(appAutoLogin) -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/pages/SiteManagerPage_qml.cpp C:/Users/a/Desktop/Code/Qt/AutoLogin/src/qml/pages/SiteManagerPage.qml
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\74BC363D5F64BDC905C7F577F4D399F7\LOGINPAGE_QML.CPP.RULE
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E make_directory C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/pages
+if %errorlevel% neq 0 goto :cmEnd
+call .qt\bin\qt_setup_tool_path.bat F:/APP/Qt/6.11.1/msvc2022_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/AutoLogin/src/qml/pages/LoginPage.qml -I C:/Users/a/Desktop/Code/Qt/AutoLogin/build -I F:/APP/Qt/6.11.1/msvc2022_64/qml -i C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin/qmldir --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qmake_AutoLogin.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=AutoLogin(appAutoLogin) -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/pages/LoginPage_qml.cpp C:/Users/a/Desktop/Code/Qt/AutoLogin/src/qml/pages/LoginPage.qml
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\74BC363D5F64BDC905C7F577F4D399F7\NETWORKPAGE_QML.CPP.RULE
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E make_directory C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/pages
+if %errorlevel% neq 0 goto :cmEnd
+call .qt\bin\qt_setup_tool_path.bat F:/APP/Qt/6.11.1/msvc2022_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/AutoLogin/src/qml/pages/NetworkPage.qml -I C:/Users/a/Desktop/Code/Qt/AutoLogin/build -I F:/APP/Qt/6.11.1/msvc2022_64/qml -i C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin/qmldir --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qmake_AutoLogin.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=AutoLogin(appAutoLogin) -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/pages/NetworkPage_qml.cpp C:/Users/a/Desktop/Code/Qt/AutoLogin/src/qml/pages/NetworkPage.qml
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\74BC363D5F64BDC905C7F577F4D399F7\SETTINGSPAGE_QML.CPP.RULE
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E make_directory C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/pages
+if %errorlevel% neq 0 goto :cmEnd
+call .qt\bin\qt_setup_tool_path.bat F:/APP/Qt/6.11.1/msvc2022_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/AutoLogin/src/qml/pages/SettingsPage.qml -I C:/Users/a/Desktop/Code/Qt/AutoLogin/build -I F:/APP/Qt/6.11.1/msvc2022_64/qml -i C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin/qmldir --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qmake_AutoLogin.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc --resource C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=AutoLogin(appAutoLogin) -o C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.rcc/qmlcache/appAutoLogin_src/qml/pages/SettingsPage_qml.cpp C:/Users/a/Desktop/Code/Qt/AutoLogin/src/qml/pages/SettingsPage.qml
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\E8B85ED1452D56D5D477DC633BD5EBBD\QRC_APPAUTOLOGIN_RAW_QML_0.CPP.RULE
+setlocal
+F:\APP\Qt\6.11.1\msvc2022_64\bin\rcc.exe --output C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qrc_appAutoLogin_raw_qml_0.cpp --name appAutoLogin_raw_qml_0 C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc --no-zstd
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\E8B85ED1452D56D5D477DC633BD5EBBD\QRC_APPAUTOLOGIN_RAW_QML_0_EXTRA_QMLDIRS.CPP.RULE
+setlocal
+F:\APP\Qt\6.11.1\msvc2022_64\bin\rcc.exe --output C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qrc_appAutoLogin_raw_qml_0_extra_qmldirs.cpp --name appAutoLogin_raw_qml_0_extra_qmldirs C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0_extra_qmldirs.qrc --no-zstd
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\CMAKELISTS.TXT
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -SC:/Users/a/Desktop/Code/Qt/AutoLogin -BC:/Users/a/Desktop/Code/Qt/AutoLogin/build --check-stamp-file C:/Users/a/Desktop/Code/Qt/AutoLogin/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

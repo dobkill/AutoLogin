@@ -1,0 +1,28 @@
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\6FAE6492C60D1CFBAE0C2BB87C47A015\APPAUTOLOGIN_RES.TXT.RULE
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -DFILES_INFO_PATH=C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/appAutoLogin_res.cmake -P F:/APP/Qt/6.11.1/msvc2022_64/lib/cmake/Qt6Qml/Qt6QmlCopyFiles.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\BBD2C52A0B67FCD1E4C86A7BD6E9E5EC\APPAUTOLOGIN_COPY_RES.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\CMAKELISTS.TXT
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -SC:/Users/a/Desktop/Code/Qt/AutoLogin -BC:/Users/a/Desktop/Code/Qt/AutoLogin/build --check-stamp-file C:/Users/a/Desktop/Code/Qt/AutoLogin/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

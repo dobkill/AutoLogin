@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>C:\Users\a\Desktop\Code\Qt\AutoLogin\build\x64\Debug\ZERO_CHECK</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\Users\a\Desktop\Code\Qt\AutoLogin\build\x64\Debug\appAutoLogin_copy_qml</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\Users\a\Desktop\Code\Qt\AutoLogin\build\x64\Debug\appAutoLogin_copy_res</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\Users\a\Desktop\Code\Qt\AutoLogin\build\x64\Debug\appAutoLogin_qmlimportscan</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\Users\a\Desktop\Code\Qt\AutoLogin\build\x64\Debug\generate_qmlls_build_ini_file</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\Users\a\Desktop\Code\Qt\AutoLogin\build\x64\Debug\appAutoLogin_autogen</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\Users\a\Desktop\Code\Qt\AutoLogin\build\x64\Debug\appAutoLogin_automoc_json_extraction</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>C:\Users\a\Desktop\Code\Qt\AutoLogin\build\Debug\appAutoLogin.exe</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles />
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>

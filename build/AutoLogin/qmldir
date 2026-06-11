@@ -1,0 +1,13 @@
+module AutoLogin
+typeinfo appAutoLogin.qmltypes
+prefer :/qt/qml/AutoLogin/
+Main 1.0 src/qml/Main.qml
+AppSidebar 1.0 src/qml/components/AppSidebar.qml
+AppHeader 1.0 src/qml/components/AppHeader.qml
+HomePage 1.0 src/qml/pages/HomePage.qml
+SiteManagerPage 1.0 src/qml/pages/SiteManagerPage.qml
+LoginPage 1.0 src/qml/pages/LoginPage.qml
+NetworkPage 1.0 src/qml/pages/NetworkPage.qml
+SettingsPage 1.0 src/qml/pages/SettingsPage.qml
+depends QtQuick
+

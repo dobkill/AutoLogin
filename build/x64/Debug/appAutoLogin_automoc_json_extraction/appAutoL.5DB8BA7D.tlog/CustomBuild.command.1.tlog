@@ -1,0 +1,20 @@
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\BUILD\CMAKEFILES\BBD2C52A0B67FCD1E4C86A7BD6E9E5EC\APPAUTOLOGIN_AUTOMOC_JSON_EXTRACTION.RULE
+setlocal
+F:\APP\Qt\6.11.1\msvc2022_64\bin\cmake_automoc_parser.exe --cmake-autogen-cache-file C:/Users/a/Desktop/Code/Qt/AutoLogin/build/CMakeFiles/appAutoLogin_autogen.dir/ParseCache_Debug.txt --cmake-autogen-info-file C:/Users/a/Desktop/Code/Qt/AutoLogin/build/CMakeFiles/appAutoLogin_autogen.dir/AutogenInfo.json --output-file-path C:/Users/a/Desktop/Code/Qt/AutoLogin/build/meta_types/appAutoLogin_json_file_list.txt --timestamp-file-path C:/Users/a/Desktop/Code/Qt/AutoLogin/build/meta_types/appAutoLogin_json_file_list.txt.timestamp --cmake-autogen-include-dir-path C:/Users/a/Desktop/Code/Qt/AutoLogin/build/appAutoLogin_autogen/include_Debug --cmake-multi-config
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\A\DESKTOP\CODE\QT\AUTOLOGIN\CMAKELISTS.TXT
+setlocal
+F:\APP\VS\VS_community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -SC:/Users/a/Desktop/Code/Qt/AutoLogin -BC:/Users/a/Desktop/Code/Qt/AutoLogin/build --check-stamp-file C:/Users/a/Desktop/Code/Qt/AutoLogin/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

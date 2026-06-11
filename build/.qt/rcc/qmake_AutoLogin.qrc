@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/qt/qml/AutoLogin">
+    <file alias="qmldir">C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin/qmldir</file>
+  </qresource>
+</RCC>
+
