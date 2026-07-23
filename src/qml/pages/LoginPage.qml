@@ -1,578 +1,434 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../components"
 
 Rectangle {
     id: loginPage
-    color: "#f7f9fc"
 
-    property int currentTab: 0  // 0: API, 1: WebView
+    property int currentTab: 0
+
+    color: theme.page
+
+    Theme { id: theme }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 20
+        anchors.margins: 24
         spacing: 16
 
-        // 标题
-        Text {
-            text: "登录配置"
-            font.pixelSize: 20
-            font.weight: Font.Bold
-            font.family: "Inter"
-            color: "#172033"
-        }
-
-        // Tab 切换
-        Rectangle {
+        RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 40
-            color: "transparent"
+            spacing: 12
 
-            RowLayout {
-                anchors.fill: parent
-                spacing: 4
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 2
 
-                Rectangle {
-                    Layout.preferredWidth: 120
-                    Layout.preferredHeight: 36
-                    radius: 8
-                    color: currentTab === 0 ? "#1677ff" : "#ffffff"
-                    border.color: currentTab === 0 ? "#1677ff" : "#d1d5db"
-                    border.width: 1
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "API 登录"
-                        font.pixelSize: 13
-                        font.weight: Font.Medium
-                        font.family: "Inter"
-                        color: currentTab === 0 ? "#ffffff" : "#374151"
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: currentTab = 0
-                    }
+                Text {
+                    text: "登录配置"
+                    font.pixelSize: 20
+                    font.weight: Font.Bold
+                    font.family: theme.fontFamily
+                    color: theme.text
                 }
 
-                Rectangle {
-                    Layout.preferredWidth: 140
-                    Layout.preferredHeight: 36
-                    radius: 8
-                    color: currentTab === 1 ? "#1677ff" : "#ffffff"
-                    border.color: currentTab === 1 ? "#1677ff" : "#d1d5db"
-                    border.width: 1
+                Text {
+                    text: currentTab === 0 ? "内部系统 / API 登录" : "外部认证网关 / WebView 登录"
+                    font.pixelSize: 12
+                    font.family: theme.fontFamily
+                    color: theme.textSoft
+                }
+            }
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: "WebView 登录"
-                        font.pixelSize: 13
-                        font.weight: Font.Medium
-                        font.family: "Inter"
-                        color: currentTab === 1 ? "#ffffff" : "#374151"
+            Rectangle {
+                Layout.preferredWidth: 282
+                Layout.preferredHeight: 40
+                radius: theme.radius
+                color: theme.surfaceStrong
+                border.color: theme.borderSoft
+                border.width: 1
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 4
+                    spacing: 4
+
+                    TabButton {
+                        Layout.fillWidth: true
+                        text: "API 登录"
+                        selected: currentTab === 0
+                        onClicked: currentTab = 0
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
+                    TabButton {
+                        Layout.fillWidth: true
+                        text: "WebView 登录"
+                        selected: currentTab === 1
                         onClicked: currentTab = 1
                     }
                 }
-
-                Item { Layout.fillWidth: true }
             }
         }
 
-        // 配置表单区域
-        Rectangle {
+        UiCard {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#ffffff"
-            radius: 10
-            border.color: "#e5e7eb"
-            border.width: 1
+            padding: 0
 
-            // API 登录配置
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 24
-                spacing: 16
+                anchors.margins: 22
+                spacing: 18
                 visible: currentTab === 0
 
-                // URL 输入
-                ColumnLayout {
+                GridLayout {
                     Layout.fillWidth: true
-                    spacing: 6
+                    columns: 2
+                    columnSpacing: 16
+                    rowSpacing: 12
 
-                    Text {
-                        text: "请求 URL"
-                        font.pixelSize: 13
-                        font.weight: Font.Medium
-                        color: "#374151"
-                        font.family: "Inter"
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.columnSpan: 2
+                        spacing: 7
+
+                        FieldLabel { text: "请求 URL" }
+                        UiTextField {
+                            Layout.fillWidth: true
+                            placeholder: "https://example.com/api/login"
+                            prefix: "URL"
+                        }
                     }
 
-                    Rectangle {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 40
-                        radius: 8
-                        color: "#f9fafb"
-                        border.color: "#d1d5db"
-                        border.width: 1
+                        spacing: 7
 
-                        TextInput {
-                            anchors.fill: parent
-                            anchors.margins: 12
-                            font.pixelSize: 14
-                            font.family: "Inter"
-                            color: "#172033"
-                            verticalAlignment: Text.AlignVCenter
+                        FieldLabel { text: "请求方法" }
+                        UiComboBox {
+                            Layout.fillWidth: true
+                            model: ["POST", "GET", "PUT"]
+                        }
+                    }
 
-                            Text {
-                                anchors.fill: parent
-                                text: "https://example.com/api/login"
-                                font.pixelSize: 14
-                                font.family: "Inter"
-                                color: "#9ca3af"
-                                visible: !parent.text && !parent.activeFocus
-                                verticalAlignment: Text.AlignVCenter
-                            }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 7
+
+                        FieldLabel { text: "绑定网卡" }
+                        UiComboBox {
+                            Layout.fillWidth: true
+                            model: ["以太网 1 / 192.168.1.20", "Wi-Fi / 192.168.31.15"]
                         }
                     }
                 }
 
-                // 请求方法 + 网卡选择
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 16
+                    spacing: 8
 
-                    ColumnLayout {
+                    FieldLabel {
+                        text: "请求参数"
                         Layout.fillWidth: true
-                        spacing: 6
-
-                        Text {
-                            text: "请求方法"
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: "#374151"
-                            font.family: "Inter"
-                        }
-
-                        ComboBox {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 40
-                            model: ["POST", "GET", "PUT"]
-                            font.pixelSize: 14
-                            font.family: "Inter"
-                        }
                     }
 
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 6
-
-                        Text {
-                            text: "绑定网卡"
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: "#374151"
-                            font.family: "Inter"
-                        }
-
-                        ComboBox {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 40
-                            model: ["以太网 1 / 192.168.1.20", "Wi-Fi / 192.168.31.15"]
-                            font.pixelSize: 14
-                            font.family: "Inter"
-                        }
+                    UiButton {
+                        text: "添加参数"
+                        icon: "+"
+                        variant: "secondary"
+                        compact: true
                     }
                 }
 
-                // 请求参数
-                ColumnLayout {
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    radius: theme.radius
+                    color: theme.surfaceMuted
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        spacing: 10
+
+                        TableHead { text: "Key"; Layout.preferredWidth: 230 }
+                        TableHead { text: "Value"; Layout.fillWidth: true }
+                    }
+                }
+
+                ListView {
+                    id: apiParamList
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing: 6
-
-                    RowLayout {
-                        Layout.fillWidth: true
-
-                        Text {
-                            text: "请求参数"
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: "#374151"
-                            font.family: "Inter"
-                        }
-
-                        Item { Layout.fillWidth: true }
-
-                        Text {
-                            text: "+ 添加参数"
-                            font.pixelSize: 12
-                            color: "#1677ff"
-                            font.family: "Inter"
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                            }
-                        }
+                    clip: true
+                    spacing: 8
+                    model: ListModel {
+                        ListElement { pKey: "username"; pValue: "admin" }
+                        ListElement { pKey: "password"; pValue: "******" }
                     }
 
-                    // 参数表头
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
+                    delegate: RowLayout {
+                        width: apiParamList.width
+                        height: 40
+                        spacing: 10
 
-                        Text { text: "Key"; font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; Layout.preferredWidth: 200 }
-                        Text { text: "Value"; font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; Layout.fillWidth: true }
-                    }
-
-                    // 参数行
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        clip: true
-                        model: ListModel {
-                            ListElement { pKey: "username"; pValue: "admin" }
-                            ListElement { pKey: "password"; pValue: "******" }
+                        UiTextField {
+                            Layout.preferredWidth: 230
+                            text: model.pKey
                         }
-                        spacing: 6
 
-                        delegate: RowLayout {
-                            width: ListView.view.width
-                            spacing: 8
-
-                            Rectangle {
-                                Layout.preferredWidth: 200
-                                Layout.preferredHeight: 36
-                                radius: 6
-                                color: "#f9fafb"
-                                border.color: "#d1d5db"
-                                border.width: 1
-
-                                TextInput {
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    text: model.pKey
-                                    font.pixelSize: 13
-                                    font.family: "Inter"
-                                    color: "#172033"
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 36
-                                radius: 6
-                                color: "#f9fafb"
-                                border.color: "#d1d5db"
-                                border.width: 1
-
-                                TextInput {
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    text: model.pValue
-                                    font.pixelSize: 13
-                                    font.family: "Inter"
-                                    color: "#172033"
-                                    verticalAlignment: Text.AlignVCenter
-                                    echoMode: model.pKey === "password" ? TextInput.Password : TextInput.Normal
-                                }
-                            }
+                        UiTextField {
+                            Layout.fillWidth: true
+                            text: model.pValue
+                            password: model.pKey === "password"
                         }
                     }
                 }
 
-                // 操作按钮
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 12
+                    spacing: 10
 
                     Item { Layout.fillWidth: true }
 
-                    Button {
+                    UiButton {
                         text: "测试登录"
-                        font.pixelSize: 13
-                        font.family: "Inter"
-
-                        background: Rectangle {
-                            radius: 8
-                            color: "#ffffff"
-                            border.color: "#1677ff"
-                            border.width: 1
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            font: parent.font
-                            color: "#1677ff"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
+                        variant: "secondary"
+                        minimumWidth: 92
                     }
 
-                    Button {
+                    UiButton {
                         text: "保存配置"
-                        font.pixelSize: 13
-                        font.family: "Inter"
-
-                        background: Rectangle {
-                            radius: 8
-                            color: "#1677ff"
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            font: parent.font
-                            color: "#ffffff"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
+                        variant: "primary"
+                        minimumWidth: 92
                     }
                 }
             }
 
-            // WebView 登录配置
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 24
-                spacing: 16
+                anchors.margins: 22
+                spacing: 18
                 visible: currentTab === 1
 
-                // URL 列表
-                ColumnLayout {
+                RowLayout {
                     Layout.fillWidth: true
-                    spacing: 6
+                    spacing: 8
 
-                    RowLayout {
+                    FieldLabel {
+                        text: "URL 访问序列"
                         Layout.fillWidth: true
-
-                        Text {
-                            text: "URL 访问序列"
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: "#374151"
-                            font.family: "Inter"
-                        }
-
-                        Item { Layout.fillWidth: true }
-
-                        Text {
-                            text: "+ 添加 URL"
-                            font.pixelSize: 12
-                            color: "#1677ff"
-                            font.family: "Inter"
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                            }
-                        }
                     }
 
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 120
-                        clip: true
-                        model: ListModel {
-                            ListElement { urlIndex: 1; url: "https://portal.example.com/login" }
-                            ListElement { urlIndex: 2; url: "https://portal.example.com/auth" }
-                        }
-                        spacing: 6
+                    UiButton {
+                        text: "添加 URL"
+                        icon: "+"
+                        variant: "secondary"
+                        compact: true
+                    }
+                }
 
-                        delegate: Rectangle {
-                            width: ListView.view.width
-                            height: 40
-                            radius: 6
-                            color: "#f9fafb"
-                            border.color: "#d1d5db"
-                            border.width: 1
+                ListView {
+                    id: urlList
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 104
+                    clip: true
+                    spacing: 8
+                    model: ListModel {
+                        ListElement { urlIndex: 1; url: "https://portal.example.com/login" }
+                        ListElement { urlIndex: 2; url: "https://portal.example.com/auth" }
+                    }
 
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: 10
-                                spacing: 8
+                    delegate: Rectangle {
+                        width: urlList.width
+                        height: 44
+                        radius: theme.radius
+                        color: theme.surfaceMuted
+                        border.color: theme.borderSoft
+                        border.width: 1
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: 12
+                            anchors.rightMargin: 12
+                            spacing: 10
+
+                            Rectangle {
+                                Layout.preferredWidth: 24
+                                Layout.preferredHeight: 24
+                                radius: 12
+                                color: theme.primarySoft
 
                                 Text {
-                                    text: model.urlIndex + "."
-                                    font.pixelSize: 13
+                                    anchors.centerIn: parent
+                                    text: model.urlIndex
+                                    font.pixelSize: 12
                                     font.weight: Font.Bold
-                                    color: "#1677ff"
+                                    font.family: theme.fontFamily
+                                    color: theme.primary
                                 }
+                            }
 
-                                Text {
-                                    text: model.url
-                                    font.pixelSize: 13
-                                    color: "#172033"
-                                    font.family: "Inter"
-                                    Layout.fillWidth: true
-                                }
+                            Text {
+                                text: model.url
+                                font.pixelSize: 13
+                                font.family: theme.fontFamily
+                                color: theme.text
+                                elide: Text.ElideRight
+                                Layout.fillWidth: true
                             }
                         }
                     }
                 }
 
-                // 操作流程配置
-                ColumnLayout {
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+
+                    FieldLabel {
+                        text: "操作流程配置"
+                        Layout.fillWidth: true
+                    }
+
+                    UiButton {
+                        text: "添加步骤"
+                        icon: "+"
+                        variant: "secondary"
+                        compact: true
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    radius: theme.radius
+                    color: theme.surfaceMuted
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        spacing: 10
+
+                        TableHead { text: "XPath"; Layout.fillWidth: true }
+                        TableHead { text: "操作类型"; Layout.preferredWidth: 118 }
+                        TableHead { text: "值"; Layout.preferredWidth: 150 }
+                    }
+                }
+
+                ListView {
+                    id: webStepList
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing: 6
-
-                    Text {
-                        text: "操作流程配置 (XPath)"
-                        font.pixelSize: 13
-                        font.weight: Font.Medium
-                        color: "#374151"
-                        font.family: "Inter"
+                    clip: true
+                    spacing: 8
+                    model: ListModel {
+                        ListElement { xpath: "//input[@id='username']"; opType: "input"; opValue: "admin" }
+                        ListElement { xpath: "//input[@id='password']"; opType: "input"; opValue: "******" }
+                        ListElement { xpath: "//button[@type='submit']"; opType: "click"; opValue: "" }
                     }
 
-                    // 表头
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
+                    delegate: RowLayout {
+                        width: webStepList.width
+                        height: 40
+                        spacing: 10
+                        property string stepType: model.opType
 
-                        Text { text: "XPath";           font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; Layout.fillWidth: true }
-                        Text { text: "操作类型";        font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; Layout.preferredWidth: 100 }
-                        Text { text: "值";              font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; Layout.preferredWidth: 120 }
-                    }
-
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        clip: true
-                        model: ListModel {
-                            ListElement { xpath: "//input[@id='username']"; opType: "input"; opValue: "admin" }
-                            ListElement { xpath: "//input[@id='password']"; opType: "input"; opValue: "******" }
-                            ListElement { xpath: "//button[@type='submit']"; opType: "click"; opValue: "" }
+                        UiTextField {
+                            Layout.fillWidth: true
+                            text: model.xpath
+                            fontFamily: theme.monoFontFamily
                         }
-                        spacing: 6
 
-                        delegate: RowLayout {
-                            width: ListView.view.width
-                            spacing: 8
+                        UiComboBox {
+                            Layout.preferredWidth: 118
+                            model: ["click", "input", "wait"]
+                            currentIndex: stepType === "click" ? 0 : (stepType === "input" ? 1 : 2)
+                        }
 
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 36
-                                radius: 6
-                                color: "#f9fafb"
-                                border.color: "#d1d5db"
-                                border.width: 1
-
-                                TextInput {
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    text: model.xpath
-                                    font.pixelSize: 12
-                                    font.family: "Consolas"
-                                    color: "#172033"
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-
-                            ComboBox {
-                                Layout.preferredWidth: 100
-                                Layout.preferredHeight: 36
-                                model: ["click", "input", "wait"]
-                                currentIndex: model.opType === "click" ? 0 : (model.opType === "input" ? 1 : 2)
-                                font.pixelSize: 12
-                            }
-
-                            Rectangle {
-                                Layout.preferredWidth: 120
-                                Layout.preferredHeight: 36
-                                radius: 6
-                                color: "#f9fafb"
-                                border.color: "#d1d5db"
-                                border.width: 1
-
-                                TextInput {
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    text: model.opValue
-                                    font.pixelSize: 12
-                                    font.family: "Inter"
-                                    color: "#172033"
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
+                        UiTextField {
+                            Layout.preferredWidth: 150
+                            text: model.opValue
+                            password: stepType === "input" && model.opValue === "******"
                         }
                     }
                 }
 
-                // 网卡选择 + 操作按钮
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 16
 
                     ColumnLayout {
-                        spacing: 6
+                        Layout.preferredWidth: 320
+                        spacing: 7
 
-                        Text {
-                            text: "绑定网卡"
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: "#374151"
-                            font.family: "Inter"
-                        }
-
-                        ComboBox {
-                            Layout.preferredWidth: 260
-                            Layout.preferredHeight: 40
+                        FieldLabel { text: "绑定网卡" }
+                        UiComboBox {
+                            Layout.fillWidth: true
                             model: ["以太网 1 / 192.168.1.20", "Wi-Fi / 192.168.31.15"]
-                            font.pixelSize: 14
-                            font.family: "Inter"
                         }
                     }
 
                     Item { Layout.fillWidth: true }
 
-                    Button {
+                    UiButton {
                         text: "预览测试"
-                        font.pixelSize: 13
-                        font.family: "Inter"
-
-                        background: Rectangle {
-                            radius: 8
-                            color: "#ffffff"
-                            border.color: "#1677ff"
-                            border.width: 1
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            font: parent.font
-                            color: "#1677ff"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
+                        variant: "secondary"
+                        minimumWidth: 92
                     }
 
-                    Button {
+                    UiButton {
                         text: "保存配置"
-                        font.pixelSize: 13
-                        font.family: "Inter"
-
-                        background: Rectangle {
-                            radius: 8
-                            color: "#1677ff"
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            font: parent.font
-                            color: "#ffffff"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
+                        variant: "primary"
+                        minimumWidth: 92
                     }
                 }
             }
         }
+    }
+
+    component TabButton: Rectangle {
+        property string text: ""
+        property bool selected: false
+        signal clicked()
+
+        radius: theme.radius - 2
+        color: selected ? theme.surface : "transparent"
+        border.color: selected ? theme.borderSoft : "transparent"
+        border.width: selected ? 1 : 0
+
+        Text {
+            anchors.centerIn: parent
+            text: parent.text
+            font.pixelSize: 13
+            font.weight: parent.selected ? Font.DemiBold : Font.Medium
+            font.family: theme.fontFamily
+            color: parent.selected ? theme.primary : theme.textMuted
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: parent.clicked()
+        }
+    }
+
+    component FieldLabel: Text {
+        font.pixelSize: 13
+        font.weight: Font.DemiBold
+        font.family: theme.fontFamily
+        color: theme.text
+    }
+
+    component TableHead: Text {
+        font.pixelSize: 12
+        font.weight: Font.DemiBold
+        font.family: theme.fontFamily
+        color: theme.textMuted
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
     }
 }

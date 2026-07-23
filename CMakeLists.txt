@@ -22,6 +22,13 @@ qt_add_qml_module(appAutoLogin
     VERSION 1.0
     QML_FILES
         src/qml/Main.qml
+        src/qml/components/Theme.qml
+        src/qml/components/UiCard.qml
+        src/qml/components/UiButton.qml
+        src/qml/components/UiComboBox.qml
+        src/qml/components/UiSwitch.qml
+        src/qml/components/UiCheckBox.qml
+        src/qml/components/UiTextField.qml
         src/qml/components/AppSidebar.qml
         src/qml/components/AppHeader.qml
         src/qml/pages/HomePage.qml
