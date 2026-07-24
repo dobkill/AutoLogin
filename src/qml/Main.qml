@@ -11,21 +11,48 @@ ApplicationWindow {
     height: 900
     minimumWidth: 1080
     minimumHeight: 720
-    visible: true
+    visible: !autoLoginMode
     title: "自动登录器"
     color: theme.page
     font.family: theme.fontFamily
 
     property int currentPage: 0
     property var pageModel: [
-        { name: "首页", icon: "\u2302", page: "pages/HomePage.qml" },
-        { name: "站点管理", icon: "\u25A6", page: "pages/SiteManagerPage.qml" },
-        { name: "登录配置", icon: "API", page: "pages/LoginPage.qml" },
-        { name: "网卡扫描", icon: "\u25A3", page: "pages/NetworkPage.qml" },
-        { name: "系统设置", icon: "\u2699", page: "pages/SettingsPage.qml" }
+        { name: "首页", icon: "\u2302" },
+        { name: "站点管理", icon: "\u25A6" },
+        { name: "登录配置", icon: "API" },
+        { name: "网卡扫描", icon: "\u25A3" },
+        { name: "系统设置", icon: "\u2699" }
     ]
 
     Theme { id: theme }
+
+    function navigateTo(index, properties) {
+        if (index < 0 || index >= pages.length)
+            return
+
+        window.currentPage = index
+        stackView.replace(pages[index], properties || {})
+    }
+
+    property var pages: []
+
+    Component.onCompleted: {
+        pages = [
+            homePageComponent,
+            siteManagerPageComponent,
+            loginPageComponent,
+            networkPageComponent,
+            settingsPageComponent
+        ]
+    }
+
+    onClosing: function(close) {
+        if (appController.settings.minimizeToTray) {
+            close.accepted = false
+            window.showMinimized()
+        }
+    }
 
     RowLayout {
         anchors.fill: parent
@@ -36,10 +63,7 @@ ApplicationWindow {
             Layout.preferredWidth: 224
             currentPage: window.currentPage
             onPageSelected: function(index) {
-                if (window.currentPage === index)
-                    return
-                window.currentPage = index
-                stackView.replace(pageModel[index].page)
+                window.navigateTo(index)
             }
         }
 
@@ -59,7 +83,7 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
-                initialItem: "pages/HomePage.qml"
+                initialItem: homePageComponent
 
                 replaceEnter: Transition {
                     NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 140; easing.type: Easing.OutCubic }
@@ -70,5 +94,42 @@ ApplicationWindow {
                 }
             }
         }
+    }
+
+    Component {
+        id: homePageComponent
+        HomePage {
+            onNavigateRequested: function(pageIndex) {
+                window.navigateTo(pageIndex)
+            }
+        }
+    }
+
+    Component {
+        id: siteManagerPageComponent
+        SiteManagerPage {
+            onEditRequested: function(siteId) {
+                window.navigateTo(2, { editingConfigId: siteId })
+            }
+        }
+    }
+
+    Component {
+        id: loginPageComponent
+        LoginPage {
+            onSaved: function() {
+                window.navigateTo(1)
+            }
+        }
+    }
+
+    Component {
+        id: networkPageComponent
+        NetworkPage {}
+    }
+
+    Component {
+        id: settingsPageComponent
+        SettingsPage {}
     }
 }

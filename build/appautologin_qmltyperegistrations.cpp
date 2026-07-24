@@ -8,17 +8,15 @@
 #include <QtQml/qqmlmoduleregistration.h>
 
 
-
 #if !defined(QT_STATIC)
 #define Q_QMLTYPE_EXPORT Q_DECL_EXPORT
 #else
 #define Q_QMLTYPE_EXPORT
 #endif
+
 Q_QMLTYPE_EXPORT void qml_register_types_AutoLogin()
 {
-    QT_WARNING_PUSH QT_WARNING_DISABLE_DEPRECATED
-    QT_WARNING_POP
     qmlRegisterModule("AutoLogin", 1, 0);
 }
 
-static const QQmlModuleRegistration autoLoginRegistration("AutoLogin", qml_register_types_AutoLogin);
+static const QQmlModuleRegistration registration("AutoLogin", qml_register_types_AutoLogin);

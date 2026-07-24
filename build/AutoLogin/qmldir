@@ -1,7 +1,14 @@
 module AutoLogin
 typeinfo appAutoLogin.qmltypes
-prefer :/qt/qml/AutoLogin/
+prefer :/AutoLogin/
 Main 1.0 src/qml/Main.qml
+Theme 1.0 src/qml/components/Theme.qml
+UiCard 1.0 src/qml/components/UiCard.qml
+UiButton 1.0 src/qml/components/UiButton.qml
+UiComboBox 1.0 src/qml/components/UiComboBox.qml
+UiSwitch 1.0 src/qml/components/UiSwitch.qml
+UiCheckBox 1.0 src/qml/components/UiCheckBox.qml
+UiTextField 1.0 src/qml/components/UiTextField.qml
 AppSidebar 1.0 src/qml/components/AppSidebar.qml
 AppHeader 1.0 src/qml/components/AppHeader.qml
 HomePage 1.0 src/qml/pages/HomePage.qml
@@ -9,5 +16,4 @@ SiteManagerPage 1.0 src/qml/pages/SiteManagerPage.qml
 LoginPage 1.0 src/qml/pages/LoginPage.qml
 NetworkPage 1.0 src/qml/pages/NetworkPage.qml
 SettingsPage 1.0 src/qml/pages/SettingsPage.qml
-depends QtQuick
 

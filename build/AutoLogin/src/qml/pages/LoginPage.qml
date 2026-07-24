@@ -1,578 +1,775 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../components"
 
 Rectangle {
     id: loginPage
-    color: "#f7f9fc"
 
-    property int currentTab: 0  // 0: API, 1: WebView
+    signal saved()
+
+    property int currentTab: 0
+    property string editingConfigId: ""
+    property string apiId: ""
+    property string webId: ""
+    property string localMessage: ""
+    property bool ready: false
+
+    color: theme.page
+
+    Theme { id: theme }
+
+    ListModel { id: apiParams }
+    ListModel { id: apiHeaders }
+    ListModel { id: webUrls }
+    ListModel { id: webSteps }
+
+    Component.onCompleted: {
+        ready = true
+        loadConfig(editingConfigId)
+    }
+    onEditingConfigIdChanged: {
+        if (ready)
+            loadConfig(editingConfigId)
+    }
+
+    function resetForms() {
+        apiId = ""
+        webId = ""
+        apiRemark.text = ""
+        apiUrl.text = ""
+        apiMethod.currentIndex = 0
+        apiNetwork.currentIndex = 0
+        apiEnabled.checked = true
+        apiParams.clear()
+        apiHeaders.clear()
+        apiParams.append({ pKey: "username", pValue: "" })
+        apiParams.append({ pKey: "password", pValue: "" })
+
+        webRemark.text = ""
+        webNetwork.currentIndex = 0
+        webEnabled.checked = true
+        webUrls.clear()
+        webSteps.clear()
+        localMessage = ""
+    }
+
+    function networkIndex(ip) {
+        var label = appController.networkLabelForIp(ip)
+        var choices = appController.networkCardChoices
+        for (var i = 0; i < choices.length; ++i) {
+            if (choices[i] === label)
+                return i
+        }
+        return 0
+    }
+
+    function methodIndex(method) {
+        if (method === "GET")
+            return 1
+        if (method === "PUT")
+            return 2
+        return 0
+    }
+
+    function opIndex(type) {
+        if (type === "input")
+            return 1
+        if (type === "wait")
+            return 2
+        return 0
+    }
+
+    function objectFromRows(model) {
+        var object = {}
+        for (var i = 0; i < model.count; ++i) {
+            var row = model.get(i)
+            var key = (row.pKey || "").trim()
+            if (key.length > 0)
+                object[key] = row.pValue
+        }
+        return object
+    }
+
+    function rowsFromObject(model, object) {
+        model.clear()
+        for (var key in object)
+            model.append({ pKey: key, pValue: String(object[key]) })
+    }
+
+    function listFromModel(model, role) {
+        var list = []
+        for (var i = 0; i < model.count; ++i) {
+            var value = String(model.get(i)[role] || "").trim()
+            if (value.length > 0)
+                list.push(value)
+        }
+        return list
+    }
+
+    function stepsFromModel() {
+        var list = []
+        for (var i = 0; i < webSteps.count; ++i) {
+            var row = webSteps.get(i)
+            if ((row.xpath || "").trim().length === 0 && row.opType !== "wait")
+                continue
+            list.push({
+                urlIndex: Math.max(1, Number(row.urlIndex || 1)),
+                xpath: row.xpath,
+                type: row.opType,
+                value: row.opValue,
+                waitMs: Math.max(0, Number(row.waitMs || 0))
+            })
+        }
+        return list
+    }
+
+    function loadConfig(siteId) {
+        resetForms()
+        if (!siteId)
+            return
+
+        var config = appController.getConfig(siteId)
+        if (!config.id)
+            return
+
+        currentTab = config.type === "webview" ? 1 : 0
+        if (currentTab === 0) {
+            apiId = config.id
+            apiRemark.text = config.remark || config.name
+            apiUrl.text = config.url || ""
+            apiMethod.currentIndex = methodIndex(config.method)
+            apiNetwork.currentIndex = networkIndex(config.networkCard)
+            apiEnabled.checked = config.enabled
+            rowsFromObject(apiParams, config.args || {})
+            rowsFromObject(apiHeaders, config.headers || {})
+        } else {
+            webId = config.id
+            webRemark.text = config.remark || config.name
+            webNetwork.currentIndex = networkIndex(config.networkCard)
+            webEnabled.checked = config.enabled
+            webUrls.clear()
+            var urls = config.urls || []
+            for (var i = 0; i < urls.length; ++i)
+                webUrls.append({ url: urls[i] })
+            webSteps.clear()
+            var steps = config.operations || []
+            for (var j = 0; j < steps.length; ++j) {
+                webSteps.append({
+                    urlIndex: steps[j].urlIndex || 1,
+                    xpath: steps[j].xpath || "",
+                    opType: steps[j].type || steps[j].opType || "click",
+                    opValue: steps[j].value || steps[j].opValue || "",
+                    waitMs: steps[j].waitMs || 0
+                })
+            }
+        }
+    }
+
+    function apiConfigMap() {
+        return {
+            id: apiId,
+            type: "api",
+            remark: apiRemark.text,
+            url: apiUrl.text,
+            method: apiMethod.currentText,
+            args: objectFromRows(apiParams),
+            headers: objectFromRows(apiHeaders),
+            networkCard: appController.networkIpFromChoice(apiNetwork.currentText),
+            enabled: apiEnabled.checked
+        }
+    }
+
+    function webConfigMap() {
+        return {
+            id: webId,
+            type: "webview",
+            remark: webRemark.text,
+            urls: listFromModel(webUrls, "url"),
+            operations: stepsFromModel(),
+            networkCard: appController.networkIpFromChoice(webNetwork.currentText),
+            enabled: webEnabled.checked
+        }
+    }
+
+    function validateApi() {
+        if (apiUrl.text.trim().length === 0) {
+            localMessage = "请填写 API 请求 URL"
+            return false
+        }
+        return true
+    }
+
+    function validateWeb() {
+        if (listFromModel(webUrls, "url").length === 0) {
+            localMessage = "请至少添加一个 WebView URL"
+            return false
+        }
+        return true
+    }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 20
+        anchors.margins: 24
         spacing: 16
 
-        // 标题
-        Text {
-            text: "登录配置"
-            font.pixelSize: 20
-            font.weight: Font.Bold
-            font.family: "Inter"
-            color: "#172033"
-        }
-
-        // Tab 切换
-        Rectangle {
+        RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 40
-            color: "transparent"
+            spacing: 12
 
-            RowLayout {
-                anchors.fill: parent
-                spacing: 4
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 2
 
-                Rectangle {
-                    Layout.preferredWidth: 120
-                    Layout.preferredHeight: 36
-                    radius: 8
-                    color: currentTab === 0 ? "#1677ff" : "#ffffff"
-                    border.color: currentTab === 0 ? "#1677ff" : "#d1d5db"
-                    border.width: 1
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "API 登录"
-                        font.pixelSize: 13
-                        font.weight: Font.Medium
-                        font.family: "Inter"
-                        color: currentTab === 0 ? "#ffffff" : "#374151"
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: currentTab = 0
-                    }
+                Text {
+                    text: editingConfigId.length > 0 ? "编辑登录配置" : "登录配置"
+                    font.pixelSize: 20
+                    font.weight: Font.Bold
+                    font.family: theme.fontFamily
+                    color: theme.text
                 }
 
-                Rectangle {
-                    Layout.preferredWidth: 140
-                    Layout.preferredHeight: 36
-                    radius: 8
-                    color: currentTab === 1 ? "#1677ff" : "#ffffff"
-                    border.color: currentTab === 1 ? "#1677ff" : "#d1d5db"
-                    border.width: 1
+                Text {
+                    text: currentTab === 0 ? "API 登录配置" : "WebView 登录流程配置"
+                    font.pixelSize: 12
+                    font.family: theme.fontFamily
+                    color: theme.textSoft
+                }
+            }
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: "WebView 登录"
-                        font.pixelSize: 13
-                        font.weight: Font.Medium
-                        font.family: "Inter"
-                        color: currentTab === 1 ? "#ffffff" : "#374151"
+            Rectangle {
+                Layout.preferredWidth: 282
+                Layout.preferredHeight: 40
+                radius: theme.radius
+                color: theme.surfaceStrong
+                border.color: theme.borderSoft
+                border.width: 1
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 4
+                    spacing: 4
+
+                    TabButton {
+                        Layout.fillWidth: true
+                        text: "API 登录"
+                        selected: currentTab === 0
+                        onClicked: currentTab = 0
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
+                    TabButton {
+                        Layout.fillWidth: true
+                        text: "WebView 登录"
+                        selected: currentTab === 1
                         onClicked: currentTab = 1
                     }
                 }
+            }
 
-                Item { Layout.fillWidth: true }
+            UiButton {
+                text: "新建"
+                variant: "secondary"
+                minimumWidth: 76
+                onClicked: {
+                    editingConfigId = ""
+                    resetForms()
+                }
             }
         }
 
-        // 配置表单区域
-        Rectangle {
+        UiCard {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#ffffff"
-            radius: 10
-            border.color: "#e5e7eb"
-            border.width: 1
+            padding: 0
 
-            // API 登录配置
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 24
+                anchors.margins: 22
                 spacing: 16
                 visible: currentTab === 0
 
-                // URL 输入
-                ColumnLayout {
+                GridLayout {
                     Layout.fillWidth: true
-                    spacing: 6
-
-                    Text {
-                        text: "请求 URL"
-                        font.pixelSize: 13
-                        font.weight: Font.Medium
-                        color: "#374151"
-                        font.family: "Inter"
-                    }
-
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 40
-                        radius: 8
-                        color: "#f9fafb"
-                        border.color: "#d1d5db"
-                        border.width: 1
-
-                        TextInput {
-                            anchors.fill: parent
-                            anchors.margins: 12
-                            font.pixelSize: 14
-                            font.family: "Inter"
-                            color: "#172033"
-                            verticalAlignment: Text.AlignVCenter
-
-                            Text {
-                                anchors.fill: parent
-                                text: "https://example.com/api/login"
-                                font.pixelSize: 14
-                                font.family: "Inter"
-                                color: "#9ca3af"
-                                visible: !parent.text && !parent.activeFocus
-                                verticalAlignment: Text.AlignVCenter
-                            }
-                        }
-                    }
-                }
-
-                // 请求方法 + 网卡选择
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 16
+                    columns: 2
+                    columnSpacing: 16
+                    rowSpacing: 12
 
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 6
-
-                        Text {
-                            text: "请求方法"
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: "#374151"
-                            font.family: "Inter"
-                        }
-
-                        ComboBox {
+                        spacing: 7
+                        FieldLabel { text: "站点备注" }
+                        UiTextField {
+                            id: apiRemark
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 40
+                            placeholder: "如：内部认证系统"
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 7
+                        FieldLabel { text: "启用自动登录" }
+                        UiSwitch { id: apiEnabled }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.columnSpan: 2
+                        spacing: 7
+
+                        FieldLabel { text: "请求 URL" }
+                        UiTextField {
+                            id: apiUrl
+                            Layout.fillWidth: true
+                            placeholder: "https://example.com/api/login"
+                            prefix: "URL"
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 7
+
+                        FieldLabel { text: "请求方法" }
+                        UiComboBox {
+                            id: apiMethod
+                            Layout.fillWidth: true
                             model: ["POST", "GET", "PUT"]
-                            font.pixelSize: 14
-                            font.family: "Inter"
                         }
                     }
 
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 6
+                        spacing: 7
 
-                        Text {
-                            text: "绑定网卡"
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: "#374151"
-                            font.family: "Inter"
-                        }
-
-                        ComboBox {
+                        FieldLabel { text: "绑定网卡" }
+                        UiComboBox {
+                            id: apiNetwork
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 40
-                            model: ["以太网 1 / 192.168.1.20", "Wi-Fi / 192.168.31.15"]
-                            font.pixelSize: 14
-                            font.family: "Inter"
+                            model: appController.networkCardChoices
                         }
                     }
                 }
 
-                // 请求参数
-                ColumnLayout {
+                KeyValueEditor {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    spacing: 6
-
-                    RowLayout {
-                        Layout.fillWidth: true
-
-                        Text {
-                            text: "请求参数"
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: "#374151"
-                            font.family: "Inter"
-                        }
-
-                        Item { Layout.fillWidth: true }
-
-                        Text {
-                            text: "+ 添加参数"
-                            font.pixelSize: 12
-                            color: "#1677ff"
-                            font.family: "Inter"
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                            }
-                        }
-                    }
-
-                    // 参数表头
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-
-                        Text { text: "Key"; font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; Layout.preferredWidth: 200 }
-                        Text { text: "Value"; font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; Layout.fillWidth: true }
-                    }
-
-                    // 参数行
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        clip: true
-                        model: ListModel {
-                            ListElement { pKey: "username"; pValue: "admin" }
-                            ListElement { pKey: "password"; pValue: "******" }
-                        }
-                        spacing: 6
-
-                        delegate: RowLayout {
-                            width: ListView.view.width
-                            spacing: 8
-
-                            Rectangle {
-                                Layout.preferredWidth: 200
-                                Layout.preferredHeight: 36
-                                radius: 6
-                                color: "#f9fafb"
-                                border.color: "#d1d5db"
-                                border.width: 1
-
-                                TextInput {
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    text: model.pKey
-                                    font.pixelSize: 13
-                                    font.family: "Inter"
-                                    color: "#172033"
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 36
-                                radius: 6
-                                color: "#f9fafb"
-                                border.color: "#d1d5db"
-                                border.width: 1
-
-                                TextInput {
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    text: model.pValue
-                                    font.pixelSize: 13
-                                    font.family: "Inter"
-                                    color: "#172033"
-                                    verticalAlignment: Text.AlignVCenter
-                                    echoMode: model.pKey === "password" ? TextInput.Password : TextInput.Normal
-                                }
-                            }
-                        }
-                    }
+                    Layout.preferredHeight: 188
+                    title: "请求参数"
+                    keyTitle: "Key"
+                    valueTitle: "Value"
+                    modelObject: apiParams
+                    passwordForKey: "password"
+                    onAddClicked: apiParams.append({ pKey: "", pValue: "" })
+                    onRemoveClicked: function(row) { apiParams.remove(row) }
                 }
 
-                // 操作按钮
-                RowLayout {
+                KeyValueEditor {
                     Layout.fillWidth: true
-                    spacing: 12
+                    Layout.preferredHeight: 154
+                    title: "请求头"
+                    keyTitle: "Header"
+                    valueTitle: "Value"
+                    modelObject: apiHeaders
+                    onAddClicked: apiHeaders.append({ pKey: "", pValue: "" })
+                    onRemoveClicked: function(row) { apiHeaders.remove(row) }
+                }
 
-                    Item { Layout.fillWidth: true }
-
-                    Button {
-                        text: "测试登录"
-                        font.pixelSize: 13
-                        font.family: "Inter"
-
-                        background: Rectangle {
-                            radius: 8
-                            color: "#ffffff"
-                            border.color: "#1677ff"
-                            border.width: 1
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            font: parent.font
-                            color: "#1677ff"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
+                ActionBar {
+                    message: localMessage || appController.lastMessage
+                    onTestClicked: {
+                        if (validateApi())
+                            appController.testConfig(apiConfigMap())
                     }
-
-                    Button {
-                        text: "保存配置"
-                        font.pixelSize: 13
-                        font.family: "Inter"
-
-                        background: Rectangle {
-                            radius: 8
-                            color: "#1677ff"
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            font: parent.font
-                            color: "#ffffff"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
+                    onSaveClicked: {
+                        if (!validateApi())
+                            return
+                        var id = appController.saveApiConfig(apiConfigMap())
+                        if (id.length > 0)
+                            loginPage.saved()
                     }
                 }
             }
 
-            // WebView 登录配置
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 24
+                anchors.margins: 22
                 spacing: 16
                 visible: currentTab === 1
 
-                // URL 列表
-                ColumnLayout {
+                GridLayout {
                     Layout.fillWidth: true
-                    spacing: 6
-
-                    RowLayout {
-                        Layout.fillWidth: true
-
-                        Text {
-                            text: "URL 访问序列"
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: "#374151"
-                            font.family: "Inter"
-                        }
-
-                        Item { Layout.fillWidth: true }
-
-                        Text {
-                            text: "+ 添加 URL"
-                            font.pixelSize: 12
-                            color: "#1677ff"
-                            font.family: "Inter"
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                            }
-                        }
-                    }
-
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 120
-                        clip: true
-                        model: ListModel {
-                            ListElement { urlIndex: 1; url: "https://portal.example.com/login" }
-                            ListElement { urlIndex: 2; url: "https://portal.example.com/auth" }
-                        }
-                        spacing: 6
-
-                        delegate: Rectangle {
-                            width: ListView.view.width
-                            height: 40
-                            radius: 6
-                            color: "#f9fafb"
-                            border.color: "#d1d5db"
-                            border.width: 1
-
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: 10
-                                spacing: 8
-
-                                Text {
-                                    text: model.urlIndex + "."
-                                    font.pixelSize: 13
-                                    font.weight: Font.Bold
-                                    color: "#1677ff"
-                                }
-
-                                Text {
-                                    text: model.url
-                                    font.pixelSize: 13
-                                    color: "#172033"
-                                    font.family: "Inter"
-                                    Layout.fillWidth: true
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // 操作流程配置
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    spacing: 6
-
-                    Text {
-                        text: "操作流程配置 (XPath)"
-                        font.pixelSize: 13
-                        font.weight: Font.Medium
-                        color: "#374151"
-                        font.family: "Inter"
-                    }
-
-                    // 表头
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-
-                        Text { text: "XPath";           font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; Layout.fillWidth: true }
-                        Text { text: "操作类型";        font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; Layout.preferredWidth: 100 }
-                        Text { text: "值";              font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; Layout.preferredWidth: 120 }
-                    }
-
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        clip: true
-                        model: ListModel {
-                            ListElement { xpath: "//input[@id='username']"; opType: "input"; opValue: "admin" }
-                            ListElement { xpath: "//input[@id='password']"; opType: "input"; opValue: "******" }
-                            ListElement { xpath: "//button[@type='submit']"; opType: "click"; opValue: "" }
-                        }
-                        spacing: 6
-
-                        delegate: RowLayout {
-                            width: ListView.view.width
-                            spacing: 8
-
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 36
-                                radius: 6
-                                color: "#f9fafb"
-                                border.color: "#d1d5db"
-                                border.width: 1
-
-                                TextInput {
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    text: model.xpath
-                                    font.pixelSize: 12
-                                    font.family: "Consolas"
-                                    color: "#172033"
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-
-                            ComboBox {
-                                Layout.preferredWidth: 100
-                                Layout.preferredHeight: 36
-                                model: ["click", "input", "wait"]
-                                currentIndex: model.opType === "click" ? 0 : (model.opType === "input" ? 1 : 2)
-                                font.pixelSize: 12
-                            }
-
-                            Rectangle {
-                                Layout.preferredWidth: 120
-                                Layout.preferredHeight: 36
-                                radius: 6
-                                color: "#f9fafb"
-                                border.color: "#d1d5db"
-                                border.width: 1
-
-                                TextInput {
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    text: model.opValue
-                                    font.pixelSize: 12
-                                    font.family: "Inter"
-                                    color: "#172033"
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // 网卡选择 + 操作按钮
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 16
+                    columns: 2
+                    columnSpacing: 16
+                    rowSpacing: 12
 
                     ColumnLayout {
-                        spacing: 6
+                        Layout.fillWidth: true
+                        spacing: 7
+                        FieldLabel { text: "站点备注" }
+                        UiTextField {
+                            id: webRemark
+                            Layout.fillWidth: true
+                            placeholder: "如：外部认证网关"
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 7
+                        FieldLabel { text: "绑定网卡" }
+                        UiComboBox {
+                            id: webNetwork
+                            Layout.fillWidth: true
+                            model: appController.networkCardChoices
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 7
+                        FieldLabel { text: "启用自动登录" }
+                        UiSwitch { id: webEnabled }
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+
+                    FieldLabel {
+                        text: "URL 访问序列"
+                        Layout.fillWidth: true
+                    }
+
+                    UiButton {
+                        text: "添加 URL"
+                        icon: "+"
+                        variant: "secondary"
+                        compact: true
+                        onClicked: webUrls.append({ url: "" })
+                    }
+                }
+
+                ListView {
+                    id: urlList
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 116
+                    clip: true
+                    spacing: 8
+                    model: webUrls
+
+                    delegate: RowLayout {
+                        width: urlList.width
+                        height: 40
+                        spacing: 10
+                        property int rowIndex: index
 
                         Text {
-                            text: "绑定网卡"
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: "#374151"
-                            font.family: "Inter"
-                        }
-
-                        ComboBox {
-                            Layout.preferredWidth: 260
-                            Layout.preferredHeight: 40
-                            model: ["以太网 1 / 192.168.1.20", "Wi-Fi / 192.168.31.15"]
-                            font.pixelSize: 14
-                            font.family: "Inter"
-                        }
-                    }
-
-                    Item { Layout.fillWidth: true }
-
-                    Button {
-                        text: "预览测试"
-                        font.pixelSize: 13
-                        font.family: "Inter"
-
-                        background: Rectangle {
-                            radius: 8
-                            color: "#ffffff"
-                            border.color: "#1677ff"
-                            border.width: 1
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            font: parent.font
-                            color: "#1677ff"
+                            text: "#" + (index + 1)
+                            font.pixelSize: 12
+                            font.weight: Font.Bold
+                            font.family: theme.fontFamily
+                            color: theme.primary
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
+                            Layout.preferredWidth: 38
+                        }
+
+                        UiTextField {
+                            Layout.fillWidth: true
+                            text: model.url
+                            placeholder: "https://portal.example.com/login"
+                            onTextChanged: webUrls.setProperty(rowIndex, "url", text)
+                        }
+
+                        UiButton {
+                            text: "\u00D7"
+                            variant: "ghost"
+                            compact: true
+                            minimumWidth: 34
+                            onClicked: webUrls.remove(rowIndex)
                         }
                     }
+                }
 
-                    Button {
-                        text: "保存配置"
-                        font.pixelSize: 13
-                        font.family: "Inter"
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
 
-                        background: Rectangle {
-                            radius: 8
-                            color: "#1677ff"
+                    FieldLabel {
+                        text: "操作流程"
+                        Layout.fillWidth: true
+                    }
+
+                    UiButton {
+                        text: "添加步骤"
+                        icon: "+"
+                        variant: "secondary"
+                        compact: true
+                        onClicked: webSteps.append({ urlIndex: 1, xpath: "", opType: "click", opValue: "", waitMs: 0 })
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    radius: theme.radius
+                    color: theme.surfaceMuted
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        spacing: 10
+
+                        TableHead { text: "URL"; Layout.preferredWidth: 70 }
+                        TableHead { text: "XPath"; Layout.fillWidth: true }
+                        TableHead { text: "操作"; Layout.preferredWidth: 118 }
+                        TableHead { text: "值/等待毫秒"; Layout.preferredWidth: 160 }
+                        TableHead { text: ""; Layout.preferredWidth: 38 }
+                    }
+                }
+
+                ListView {
+                    id: webStepList
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    spacing: 8
+                    model: webSteps
+
+                    delegate: RowLayout {
+                        width: webStepList.width
+                        height: 40
+                        spacing: 10
+                        property int rowIndex: index
+
+                        UiTextField {
+                            Layout.preferredWidth: 70
+                            text: model.urlIndex
+                            prefix: "#"
+                            onTextChanged: webSteps.setProperty(rowIndex, "urlIndex", text)
                         }
 
-                        contentItem: Text {
-                            text: parent.text
-                            font: parent.font
-                            color: "#ffffff"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
+                        UiTextField {
+                            Layout.fillWidth: true
+                            text: model.xpath
+                            placeholder: "//input[@id='username']"
+                            fontFamily: theme.monoFontFamily
+                            onTextChanged: webSteps.setProperty(rowIndex, "xpath", text)
                         }
+
+                        UiComboBox {
+                            Layout.preferredWidth: 118
+                            model: ["click", "input", "wait"]
+                            currentIndex: opIndex(model.opType)
+                            onActivated: webSteps.setProperty(rowIndex, "opType", currentText)
+                        }
+
+                        UiTextField {
+                            Layout.preferredWidth: 160
+                            text: model.opType === "wait" ? model.waitMs : model.opValue
+                            placeholder: model.opType === "wait" ? "1000" : "输入值"
+                            password: model.opType === "input" && model.opValue === "******"
+                            onTextChanged: {
+                                if (model.opType === "wait")
+                                    webSteps.setProperty(rowIndex, "waitMs", text)
+                                else
+                                    webSteps.setProperty(rowIndex, "opValue", text)
+                            }
+                        }
+
+                        UiButton {
+                            text: "\u00D7"
+                            variant: "ghost"
+                            compact: true
+                            minimumWidth: 34
+                            onClicked: webSteps.remove(rowIndex)
+                        }
+                    }
+                }
+
+                ActionBar {
+                    message: localMessage || appController.lastMessage
+                    onTestClicked: {
+                        if (validateWeb())
+                            appController.testConfig(webConfigMap())
+                    }
+                    onSaveClicked: {
+                        if (!validateWeb())
+                            return
+                        var id = appController.saveWebViewConfig(webConfigMap())
+                        if (id.length > 0)
+                            loginPage.saved()
                     }
                 }
             }
         }
+    }
+
+    component KeyValueEditor: ColumnLayout {
+        id: editor
+
+        property string title: ""
+        property string keyTitle: "Key"
+        property string valueTitle: "Value"
+        property string passwordForKey: ""
+        property var modelObject
+        signal addClicked()
+        signal removeClicked(int row)
+
+        spacing: 8
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
+
+            FieldLabel {
+                text: editor.title
+                Layout.fillWidth: true
+            }
+
+            UiButton {
+                text: "添加"
+                icon: "+"
+                variant: "secondary"
+                compact: true
+                onClicked: editor.addClicked()
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 34
+            radius: theme.radius
+            color: theme.surfaceMuted
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                spacing: 10
+
+                TableHead { text: editor.keyTitle; Layout.preferredWidth: 230 }
+                TableHead { text: editor.valueTitle; Layout.fillWidth: true }
+                TableHead { text: ""; Layout.preferredWidth: 38 }
+            }
+        }
+
+        ListView {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            clip: true
+            spacing: 8
+            model: editor.modelObject
+
+            delegate: Component {
+                RowLayout {
+                    width: ListView.view.width
+                    height: 38
+                    spacing: 10
+                    property int rowIndex: index
+
+                    UiTextField {
+                        Layout.preferredWidth: 230
+                        text: model.pKey
+                        onTextChanged: editor.modelObject.setProperty(rowIndex, "pKey", text)
+                    }
+
+                    UiTextField {
+                        Layout.fillWidth: true
+                        text: model.pValue
+                        password: editor.passwordForKey.length > 0 && model.pKey.toLowerCase().indexOf(editor.passwordForKey) >= 0
+                        onTextChanged: editor.modelObject.setProperty(rowIndex, "pValue", text)
+                    }
+
+                    UiButton {
+                        text: "\u00D7"
+                        variant: "ghost"
+                        compact: true
+                        minimumWidth: 34
+                        onClicked: editor.removeClicked(rowIndex)
+                    }
+                }
+            }
+        }
+    }
+
+    component ActionBar: RowLayout {
+        id: actionBar
+
+        property string message: ""
+        signal testClicked()
+        signal saveClicked()
+
+        Layout.fillWidth: true
+        spacing: 10
+
+        Text {
+            text: actionBar.message
+            font.pixelSize: 12
+            font.family: theme.fontFamily
+            color: theme.textSoft
+            elide: Text.ElideRight
+            Layout.fillWidth: true
+        }
+
+        UiButton {
+            text: appController.busy ? "测试中" : "测试登录"
+            variant: "secondary"
+            minimumWidth: 92
+            enabled: !appController.busy
+            onClicked: actionBar.testClicked()
+        }
+
+        UiButton {
+            text: "保存配置"
+            variant: "primary"
+            minimumWidth: 92
+            onClicked: actionBar.saveClicked()
+        }
+    }
+
+    component TabButton: Rectangle {
+        property string text: ""
+        property bool selected: false
+        signal clicked()
+
+        radius: theme.radius - 2
+        color: selected ? theme.surface : "transparent"
+        border.color: selected ? theme.borderSoft : "transparent"
+        border.width: selected ? 1 : 0
+
+        Text {
+            anchors.centerIn: parent
+            text: parent.text
+            font.pixelSize: 13
+            font.weight: parent.selected ? Font.DemiBold : Font.Medium
+            font.family: theme.fontFamily
+            color: parent.selected ? theme.primary : theme.textMuted
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: parent.clicked()
+        }
+    }
+
+    component FieldLabel: Text {
+        font.pixelSize: 13
+        font.weight: Font.DemiBold
+        font.family: theme.fontFamily
+        color: theme.text
+    }
+
+    component TableHead: Text {
+        font.pixelSize: 12
+        font.weight: Font.DemiBold
+        font.family: theme.fontFamily
+        color: theme.textMuted
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
     }
 }

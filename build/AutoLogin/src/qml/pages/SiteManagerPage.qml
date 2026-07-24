@@ -1,155 +1,257 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../components"
 
 Rectangle {
     id: siteManagerPage
-    color: "#f7f9fc"
+
+    signal editRequested(string siteId)
+
+    property string searchText: ""
+    property int typeFilterIndex: 0
+    property int statusFilterIndex: 0
+    property var selectedIds: ({})
+    property int selectedCount: 0
+    property string pendingDeleteId: ""
+    property bool pendingDeleteBatch: false
+    property var filteredConfigs: appController.loginConfigs.filter(function(item) {
+        var keyword = searchText.trim().toLowerCase()
+        var matchesSearch = keyword.length === 0
+                || item.name.toLowerCase().indexOf(keyword) >= 0
+                || item.networkLabel.toLowerCase().indexOf(keyword) >= 0
+        var matchesType = typeFilterIndex === 0
+                || (typeFilterIndex === 1 && item.type === "api")
+                || (typeFilterIndex === 2 && item.type === "webview")
+        var matchesStatus = statusFilterIndex === 0
+                || (statusFilterIndex === 1 && item.status === "logged_in")
+                || (statusFilterIndex === 2 && item.status !== "logged_in")
+        return matchesSearch && matchesType && matchesStatus
+    })
+
+    color: theme.page
+
+    Theme { id: theme }
+
+    function selectedIdList() {
+        var ids = []
+        for (var id in selectedIds) {
+            if (selectedIds[id])
+                ids.push(id)
+        }
+        return ids
+    }
+
+    function updateSelectedCount() {
+        selectedCount = selectedIdList().length
+    }
+
+    function setSelected(siteId, selected) {
+        var copy = {}
+        for (var id in selectedIds)
+            copy[id] = selectedIds[id]
+        copy[siteId] = selected
+        selectedIds = copy
+        updateSelectedCount()
+    }
+
+    function selectAllFiltered(selected) {
+        var copy = {}
+        if (selected) {
+            for (var i = 0; i < filteredConfigs.length; ++i)
+                copy[filteredConfigs[i].id] = true
+        }
+        selectedIds = copy
+        updateSelectedCount()
+    }
+
+    function clearSelection() {
+        selectedIds = {}
+        selectedCount = 0
+    }
+
+    onFilteredConfigsChanged: {
+        var copy = {}
+        for (var i = 0; i < filteredConfigs.length; ++i) {
+            var id = filteredConfigs[i].id
+            if (selectedIds[id])
+                copy[id] = true
+        }
+        selectedIds = copy
+        updateSelectedCount()
+    }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 20
+        anchors.margins: 24
         spacing: 16
 
-        // 顶部操作栏
         RowLayout {
             Layout.fillWidth: true
             spacing: 12
 
-            Text {
-                text: "站点管理"
-                font.pixelSize: 20
-                font.weight: Font.Bold
-                font.family: "Inter"
-                color: "#172033"
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 2
+
+                Text {
+                    text: "站点管理"
+                    font.pixelSize: 20
+                    font.weight: Font.Bold
+                    font.family: theme.fontFamily
+                    color: theme.text
+                }
+
+                Text {
+                    text: appController.summary.siteCount + " 个站点，" + appController.summary.enabledCount + " 个已启用"
+                    font.pixelSize: 12
+                    font.family: theme.fontFamily
+                    color: theme.textSoft
+                }
             }
 
-            Item { Layout.fillWidth: true }
-
-            // 搜索框
-            Rectangle {
+            UiTextField {
                 Layout.preferredWidth: 240
-                Layout.preferredHeight: 36
-                radius: 8
-                color: "#ffffff"
-                border.color: "#d1d5db"
-                border.width: 1
+                placeholder: "搜索站点"
+                prefix: "\u2315"
+                text: siteManagerPage.searchText
+                onTextChanged: siteManagerPage.searchText = text
+            }
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 8
-                    spacing: 6
+            UiComboBox {
+                Layout.preferredWidth: 122
+                model: ["全部类型", "API", "WebView"]
+                currentIndex: siteManagerPage.typeFilterIndex
+                onActivated: siteManagerPage.typeFilterIndex = currentIndex
+            }
 
-                    Text {
-                        text: "\uD83D\uDD0D"
-                        font.pixelSize: 14
-                    }
+            UiComboBox {
+                Layout.preferredWidth: 122
+                model: ["全部状态", "已登录", "未登录"]
+                currentIndex: siteManagerPage.statusFilterIndex
+                onActivated: siteManagerPage.statusFilterIndex = currentIndex
+            }
 
-                    TextInput {
-                        id: searchInput
-                        Layout.fillWidth: true
-                        font.pixelSize: 13
-                        font.family: "Inter"
-                        color: "#172033"
-                        verticalAlignment: Text.AlignVCenter
+            UiButton {
+                text: "新增站点"
+                icon: "+"
+                variant: "primary"
+                minimumWidth: 108
+                onClicked: siteManagerPage.editRequested("")
+            }
+        }
 
-                        Text {
-                            anchors.fill: parent
-                            text: "搜索站点..."
-                            font.pixelSize: 13
-                            font.family: "Inter"
-                            color: "#9ca3af"
-                            visible: !parent.text && !parent.activeFocus
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                    }
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
+
+            Text {
+                text: selectedCount > 0 ? "已选择 " + selectedCount + " 个站点" : "可批量管理已选择站点"
+                font.pixelSize: 12
+                font.family: theme.fontFamily
+                color: selectedCount > 0 ? theme.primary : theme.textSoft
+                Layout.fillWidth: true
+            }
+
+            UiButton {
+                text: "批量登录"
+                icon: "\u25B6"
+                variant: "secondary"
+                compact: true
+                enabled: selectedCount > 0 && !appController.busy
+                onClicked: appController.executeBatch(siteManagerPage.selectedIdList())
+            }
+
+            UiButton {
+                text: "启用"
+                variant: "secondary"
+                compact: true
+                enabled: selectedCount > 0
+                onClicked: {
+                    var ids = siteManagerPage.selectedIdList()
+                    for (var i = 0; i < ids.length; ++i)
+                        appController.setConfigEnabled(ids[i], true)
                 }
             }
 
-            // 筛选下拉
-            ComboBox {
-                id: filterCombo
-                Layout.preferredWidth: 120
-                Layout.preferredHeight: 36
-                model: ["全部", "API", "WebView"]
-                font.pixelSize: 13
-                font.family: "Inter"
+            UiButton {
+                text: "禁用"
+                variant: "secondary"
+                compact: true
+                enabled: selectedCount > 0
+                onClicked: {
+                    var ids = siteManagerPage.selectedIdList()
+                    for (var i = 0; i < ids.length; ++i)
+                        appController.setConfigEnabled(ids[i], false)
+                }
             }
 
-            // 新增按钮
-            Button {
-                text: "+ 新增站点"
-                font.pixelSize: 13
-                font.family: "Inter"
-                font.weight: Font.Medium
-
-                background: Rectangle {
-                    radius: 8
-                    color: "#1677ff"
-                }
-
-                contentItem: Text {
-                    text: parent.text
-                    font: parent.font
-                    color: "#ffffff"
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
+            UiButton {
+                text: "删除"
+                variant: "danger"
+                compact: true
+                enabled: selectedCount > 0
+                onClicked: {
+                    pendingDeleteBatch = true
+                    pendingDeleteId = ""
+                    deleteDialog.open()
                 }
             }
         }
 
-        // 站点列表
-        Rectangle {
+        UiCard {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#ffffff"
-            radius: 10
-            border.color: "#e5e7eb"
-            border.width: 1
+            padding: 0
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 0
                 spacing: 0
 
-                // 表头
-                RowLayout {
+                Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 44
-                    Layout.leftMargin: 16
-                    Layout.rightMargin: 16
-                    spacing: 0
+                    color: theme.surfaceMuted
 
-                    CheckBox { Layout.preferredWidth: 36 }
-                    Text { text: "站点名称";   font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; font.family: "Inter"; Layout.preferredWidth: 180 }
-                    Text { text: "类型";       font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; font.family: "Inter"; Layout.preferredWidth: 100 }
-                    Text { text: "绑定网卡";   font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; font.family: "Inter"; Layout.fillWidth: true }
-                    Text { text: "状态";       font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; font.family: "Inter"; Layout.preferredWidth: 100 }
-                    Text { text: "启用";       font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; font.family: "Inter"; Layout.preferredWidth: 60 }
-                    Text { text: "最后更新";   font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; font.family: "Inter"; Layout.preferredWidth: 160 }
-                    Text { text: "操作";       font.pixelSize: 12; font.weight: Font.Bold; color: "#6b7280"; font.family: "Inter"; Layout.preferredWidth: 140 }
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 16
+                        anchors.rightMargin: 16
+                        spacing: 0
+
+                        UiCheckBox {
+                            Layout.preferredWidth: 36
+                            checked: filteredConfigs.length > 0 && selectedCount === filteredConfigs.length
+                            onToggled: siteManagerPage.selectAllFiltered(checked)
+                        }
+                        TableHead { text: "站点名称"; Layout.preferredWidth: 184 }
+                        TableHead { text: "类型"; Layout.preferredWidth: 100 }
+                        TableHead { text: "绑定网卡"; Layout.fillWidth: true }
+                        TableHead { text: "状态"; Layout.preferredWidth: 96 }
+                        TableHead { text: "启用"; Layout.preferredWidth: 66 }
+                        TableHead { text: "最后更新"; Layout.preferredWidth: 150 }
+                        TableHead { text: "操作"; Layout.preferredWidth: 212 }
+                    }
                 }
 
-                Rectangle { Layout.fillWidth: true; height: 1; color: "#e5e7eb" }
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 1
+                    color: theme.borderSoft
+                }
 
-                // 数据行
                 ListView {
                     id: siteList
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     clip: true
                     spacing: 0
-
-                    model: ListModel {
-                        ListElement { name: "内部系统";       type: "API";      networkCard: "以太网 1 / 192.168.1.20"; status: "已登录";   statusOk: true;  enabled: true;  updatedAt: "2025-05-24 10:15" }
-                        ListElement { name: "外部认证网关";   type: "WebView";  networkCard: "Wi-Fi / 192.168.31.15";  status: "未登录";   statusOk: false; enabled: true;  updatedAt: "2025-05-24 09:30" }
-                        ListElement { name: "访客网络";       type: "API";      networkCard: "以太网 1 / 192.168.1.20"; status: "已登录";   statusOk: true;  enabled: false; updatedAt: "2025-05-23 18:40" }
-                    }
+                    model: siteManagerPage.filteredConfigs
 
                     delegate: Rectangle {
                         width: siteList.width
-                        height: 48
-                        color: index % 2 === 0 ? "#f9fafb" : "#ffffff"
+                        height: 52
+                        color: rowMouse.containsMouse ? theme.primarySoft : (index % 2 === 0 ? theme.surfaceMuted : theme.surface)
 
                         RowLayout {
                             anchors.fill: parent
@@ -157,117 +259,227 @@ Rectangle {
                             anchors.rightMargin: 16
                             spacing: 0
 
-                            CheckBox {
+                            UiCheckBox {
                                 Layout.preferredWidth: 36
-                                checked: false
+                                checked: !!siteManagerPage.selectedIds[modelData.id]
+                                onToggled: siteManagerPage.setSelected(modelData.id, checked)
                             }
 
-                            Text {
-                                text: model.name
-                                font.pixelSize: 13
-                                font.weight: Font.Medium
-                                color: "#172033"
-                                font.family: "Inter"
-                                Layout.preferredWidth: 180
+                            TableCell {
+                                text: modelData.name
+                                strong: true
+                                Layout.preferredWidth: 184
                             }
 
-                            // 类型标签
-                            Rectangle {
-                                Layout.preferredWidth: 72
-                                Layout.preferredHeight: 24
-                                radius: 4
-                                color: model.type === "API" ? "#ede9fe" : "#e0f2fe"
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: model.type
-                                    font.pixelSize: 11
-                                    font.weight: Font.Medium
-                                    color: model.type === "API" ? "#7c3aed" : "#0284c7"
-                                    font.family: "Inter"
-                                }
+                            TypeBadge {
+                                Layout.preferredWidth: 100
+                                text: modelData.typeLabel
+                                api: modelData.type === "api"
                             }
 
-                            Text {
-                                text: model.networkCard
-                                font.pixelSize: 12
-                                color: "#6b7280"
-                                font.family: "Inter"
+                            TableCell {
+                                text: modelData.networkLabel
+                                muted: true
                                 Layout.fillWidth: true
                             }
 
-                            Text {
-                                text: model.status
-                                font.pixelSize: 12
-                                color: model.statusOk ? "#22c55e" : "#ef4444"
-                                font.family: "Inter"
-                                Layout.preferredWidth: 100
+                            StatusBadge {
+                                Layout.preferredWidth: 96
+                                text: modelData.statusLabel
+                                ok: modelData.statusOk
                             }
 
-                            Switch {
-                                Layout.preferredWidth: 60
-                                checked: model.enabled
+                            UiSwitch {
+                                Layout.preferredWidth: 66
+                                checked: modelData.enabled
+                                onToggled: appController.setConfigEnabled(modelData.id, checked)
                             }
 
-                            Text {
-                                text: model.updatedAt
-                                font.pixelSize: 12
-                                color: "#6b7280"
-                                font.family: "Inter"
-                                Layout.preferredWidth: 160
+                            TableCell {
+                                text: modelData.updatedAtText
+                                muted: true
+                                Layout.preferredWidth: 150
                             }
 
                             RowLayout {
-                                Layout.preferredWidth: 140
-                                spacing: 4
+                                Layout.preferredWidth: 212
+                                spacing: 10
 
-                                Text {
-                                    text: "登录"
-                                    font.pixelSize: 12
-                                    font.weight: Font.Medium
-                                    color: "#1677ff"
-                                    font.family: "Inter"
-
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
-                                    }
+                                ActionLink {
+                                    text: appController.busy ? "执行中" : "登录"
+                                    color: theme.primary
+                                    enabled: !appController.busy
+                                    onClicked: appController.executeOne(modelData.id)
                                 }
-
-                                Text { text: "|"; font.pixelSize: 12; color: "#d1d5db" }
-
-                                Text {
+                                ActionLink {
                                     text: "编辑"
-                                    font.pixelSize: 12
-                                    font.weight: Font.Medium
-                                    color: "#1677ff"
-                                    font.family: "Inter"
-
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
-                                    }
+                                    color: theme.textMuted
+                                    onClicked: siteManagerPage.editRequested(modelData.id)
                                 }
-
-                                Text { text: "|"; font.pixelSize: 12; color: "#d1d5db" }
-
-                                Text {
+                                ActionLink {
+                                    text: "复制"
+                                    color: theme.textMuted
+                                    onClicked: appController.duplicateConfig(modelData.id)
+                                }
+                                ActionLink {
                                     text: "删除"
-                                    font.pixelSize: 12
-                                    font.weight: Font.Medium
-                                    color: "#ef4444"
-                                    font.family: "Inter"
-
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
+                                    color: theme.danger
+                                    onClicked: {
+                                        pendingDeleteBatch = false
+                                        pendingDeleteId = modelData.id
+                                        deleteDialog.open()
                                     }
                                 }
                             }
                         }
+
+                        Rectangle {
+                            anchors.bottom: parent.bottom
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 1
+                            color: theme.borderSoft
+                        }
+
+                        MouseArea {
+                            id: rowMouse
+                            anchors.fill: parent
+                            acceptedButtons: Qt.NoButton
+                            hoverEnabled: true
+                        }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        visible: siteList.count === 0
+                        text: appController.loginConfigs.length === 0 ? "还没有站点配置" : "没有匹配的站点"
+                        font.pixelSize: 14
+                        font.family: theme.fontFamily
+                        color: theme.textSoft
                     }
                 }
             }
+        }
+    }
+
+    Dialog {
+        id: deleteDialog
+        modal: true
+        title: "确认删除"
+        standardButtons: Dialog.Yes | Dialog.No
+        anchors.centerIn: parent
+
+        Text {
+            text: pendingDeleteBatch ? "确定删除已选择的站点配置？" : "确定删除这个站点配置？"
+            font.pixelSize: 13
+            font.family: theme.fontFamily
+            color: theme.text
+        }
+
+        onAccepted: {
+            if (pendingDeleteBatch) {
+                var ids = siteManagerPage.selectedIdList()
+                for (var i = 0; i < ids.length; ++i)
+                    appController.deleteConfig(ids[i])
+                siteManagerPage.clearSelection()
+            } else {
+                appController.deleteConfig(pendingDeleteId)
+            }
+        }
+    }
+
+    component TableHead: Text {
+        Theme { id: headTheme }
+        font.pixelSize: 12
+        font.weight: Font.DemiBold
+        font.family: headTheme.fontFamily
+        color: headTheme.textMuted
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
+    }
+
+    component TableCell: Text {
+        property bool strong: false
+        property bool muted: false
+
+        Theme { id: cellTheme }
+        font.pixelSize: 13
+        font.weight: strong ? Font.DemiBold : Font.Normal
+        font.family: cellTheme.fontFamily
+        color: muted ? cellTheme.textMuted : cellTheme.text
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
+    }
+
+    component TypeBadge: Item {
+        property string text: ""
+        property bool api: true
+
+        Theme { id: badgeTheme }
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            width: 72
+            height: 24
+            radius: 12
+            color: api ? badgeTheme.tint(badgeTheme.violet, 0.12) : badgeTheme.tint(badgeTheme.accent, 0.13)
+
+            Text {
+                anchors.centerIn: parent
+                text: parent.parent.text
+                font.pixelSize: 11
+                font.weight: Font.DemiBold
+                font.family: badgeTheme.fontFamily
+                color: api ? badgeTheme.violet : badgeTheme.accent
+            }
+        }
+    }
+
+    component StatusBadge: Item {
+        property string text: ""
+        property bool ok: true
+
+        Theme { id: badgeTheme }
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            width: statusText.implicitWidth + 20
+            height: 24
+            radius: 12
+            color: ok ? badgeTheme.successSoft : badgeTheme.dangerSoft
+
+            Text {
+                id: statusText
+                anchors.centerIn: parent
+                text: parent.parent.text
+                font.pixelSize: 12
+                font.weight: Font.DemiBold
+                font.family: badgeTheme.fontFamily
+                color: ok ? badgeTheme.success : badgeTheme.danger
+            }
+        }
+    }
+
+    component ActionLink: Text {
+        id: actionLink
+
+        signal clicked()
+
+        Theme { id: linkTheme }
+
+        font.pixelSize: 12
+        font.weight: Font.DemiBold
+        font.family: linkTheme.fontFamily
+        opacity: enabled ? 1 : 0.45
+
+        MouseArea {
+            anchors.fill: parent
+            enabled: actionLink.enabled
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: actionLink.clicked()
         }
     }
 }

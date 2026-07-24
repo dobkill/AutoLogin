@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/">
-    <file alias="/qt/qml/AutoLogin">C:/Users/a/Desktop/Code/Qt/AutoLogin/build/AutoLogin</file>
-
-  </qresource>
-</RCC>

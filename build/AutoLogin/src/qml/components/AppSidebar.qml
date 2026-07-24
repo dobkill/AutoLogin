@@ -5,151 +5,211 @@ import QtQuick.Layouts
 Rectangle {
     id: sidebar
 
-    color: "#ffffff"
-    border.color: "#d9e1ec"
-    border.width: 0
-
     property int currentPage: 0
     signal pageSelected(int index)
 
-    // 导航项数据
     property var navItems: [
-        { name: "首页",     icon: "\u2302" },
+        { name: "首页", icon: "\u2302" },
         { name: "站点管理", icon: "\u25A6" },
-        { name: "登录配置", icon: "\u27F3" },
+        { name: "登录配置", icon: "API" },
         { name: "网卡扫描", icon: "\u25A3" },
         { name: "系统设置", icon: "\u2699" }
     ]
 
+    color: theme.surface
+    border.color: theme.borderSoft
+    border.width: 1
+
+    Theme { id: theme }
+
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 0
         spacing: 0
 
-        // Logo 区域
-        Rectangle {
+        RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 58
-            color: "transparent"
+            Layout.preferredHeight: 72
+            Layout.leftMargin: 18
+            Layout.rightMargin: 16
+            spacing: 12
 
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 16
-                spacing: 10
+            Rectangle {
+                Layout.preferredWidth: 38
+                Layout.preferredHeight: 38
+                radius: 9
+                color: theme.primary
 
-                // Logo 图标
-                Rectangle {
-                    width: 32
-                    height: 32
-                    radius: 16
-                    color: "#1677ff"
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "\u25C7"
-                        color: "#ffffff"
-                        font.pixelSize: 16
-                        font.weight: Font.Bold
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
+                Text {
+                    anchors.centerIn: parent
+                    text: "A"
+                    font.pixelSize: 18
+                    font.weight: Font.Black
+                    font.family: theme.fontFamily
+                    color: "#ffffff"
                 }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 1
 
                 Text {
                     text: "自动登录器"
-                    font.pixelSize: 18
+                    font.pixelSize: 17
                     font.weight: Font.Bold
-                    font.family: "Inter"
-                    color: "#172033"
+                    font.family: theme.fontFamily
+                    color: theme.text
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
+                }
+
+                Text {
+                    text: "AutoLogin Console"
+                    font.pixelSize: 11
+                    font.family: theme.fontFamily
+                    color: theme.textSoft
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
                 }
             }
         }
 
-        // 分隔线
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
-            color: "#d9e1ec"
+            color: theme.borderSoft
         }
 
-        // 导航列表
         ListView {
             id: navList
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.topMargin: 8
-            model: navItems.length
-            spacing: 2
+            Layout.topMargin: 10
+            Layout.bottomMargin: 10
             clip: true
+            model: navItems.length
+            spacing: 4
 
-            delegate: ItemDelegate {
+            delegate: Item {
+                id: navDelegate
+
                 width: navList.width
                 height: 44
-                highlighted: sidebar.currentPage === index
+                property bool selected: sidebar.currentPage === index
 
-                background: Rectangle {
-                    color: sidebar.currentPage === index ? "#e8f0fe" : "transparent"
-                    radius: 6
+                Rectangle {
+                    id: navBackground
+                    anchors.fill: parent
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
+                    radius: theme.radius
+                    color: navDelegate.selected ? theme.primarySoft : (navMouse.containsMouse ? theme.surfaceMuted : "transparent")
 
-                    // 左侧指示条
+                    Behavior on color {
+                        ColorAnimation { duration: 120 }
+                    }
+
                     Rectangle {
-                        visible: sidebar.currentPage === index
+                        visible: navDelegate.selected
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
                         width: 3
-                        height: 24
-                        radius: 1.5
-                        color: "#1677ff"
+                        height: 22
+                        radius: 2
+                        color: theme.primary
                     }
                 }
 
-                contentItem: RowLayout {
+                RowLayout {
+                    anchors.fill: navBackground
+                    anchors.leftMargin: 15
+                    anchors.rightMargin: 12
                     spacing: 10
 
-                    Text {
-                        text: navItems[index].icon
-                        font.pixelSize: 16
-                        font.weight: Font.Bold
-                        color: sidebar.currentPage === index ? "#1677ff" : "#6b7280"
-                        Layout.leftMargin: 20
+                    Rectangle {
+                        Layout.preferredWidth: 28
+                        Layout.preferredHeight: 28
+                        radius: 7
+                        color: navDelegate.selected ? theme.tint(theme.primary, 0.12) : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: navItems[index].icon
+                            font.pixelSize: navItems[index].icon === "API" ? 10 : 15
+                            font.weight: Font.Bold
+                            font.family: theme.fontFamily
+                            color: navDelegate.selected ? theme.primary : theme.textMuted
+                        }
                     }
 
                     Text {
                         text: navItems[index].name
                         font.pixelSize: 14
-                        font.family: "Inter"
-                        color: sidebar.currentPage === index ? "#1677ff" : "#374151"
-                        font.weight: sidebar.currentPage === index ? Font.DemiBold : Font.Normal
+                        font.weight: navDelegate.selected ? Font.DemiBold : Font.Medium
+                        font.family: theme.fontFamily
+                        color: navDelegate.selected ? theme.primary : theme.text
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
                     }
                 }
 
-                onClicked: sidebar.pageSelected(index)
+                MouseArea {
+                    id: navMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: sidebar.pageSelected(index)
+                }
             }
         }
 
-        // 底部状态栏
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 60
+            Layout.preferredHeight: 86
             color: "transparent"
 
-            ColumnLayout {
+            Rectangle {
                 anchors.fill: parent
-                anchors.margins: 12
-                spacing: 2
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                anchors.topMargin: 8
+                anchors.bottomMargin: 12
+                radius: theme.radius
+                color: theme.surfaceMuted
+                border.color: theme.borderSoft
+                border.width: 1
 
-                Text {
-                    text: "● 服务运行中"
-                    font.pixelSize: 12
-                    color: "#22c55e"
-                    font.family: "Inter"
-                }
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 10
 
-                Text {
-                    text: "版本 1.0.0"
-                    font.pixelSize: 11
-                    color: "#9ca3af"
-                    font.family: "Inter"
+                    Rectangle {
+                        Layout.preferredWidth: 10
+                        Layout.preferredHeight: 10
+                        radius: 5
+                        color: appController.busy ? theme.warning : (appController.networkStatus.isOnline ? theme.success : theme.danger)
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 1
+
+                        Text {
+                            text: appController.busy ? "任务执行中" : (appController.networkStatus.isOnline ? "网络已连接" : "网络未连接")
+                            font.pixelSize: 12
+                            font.weight: Font.DemiBold
+                            font.family: theme.fontFamily
+                            color: theme.text
+                        }
+
+                        Text {
+                            text: appController.networkStatus.primaryIP || "v1.0.0"
+                            font.pixelSize: 11
+                            font.family: theme.fontFamily
+                            color: theme.textSoft
+                        }
+                    }
                 }
             }
         }

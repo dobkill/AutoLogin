@@ -1,0 +1,183 @@
+{
+    "classes": [
+        {
+            "className": "LoginEngine",
+            "methods": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "siteId",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "executeOne",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "siteIds",
+                            "type": "QStringList"
+                        }
+                    ],
+                    "name": "executeBatch",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "executeAll",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "config",
+                            "type": "QVariantMap"
+                        }
+                    ],
+                    "name": "testConfig",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "siteId",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "logoutOne",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "siteId",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "checkStatus",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "enabled",
+                            "type": "bool"
+                        }
+                    ],
+                    "name": "setAutoLogin",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "silentLoginAndQuit",
+                    "returnType": "void"
+                }
+            ],
+            "object": true,
+            "properties": [
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 0,
+                    "name": "busy",
+                    "notify": "busyChanged",
+                    "read": "busy",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "bool",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 1,
+                    "name": "lastMessage",
+                    "notify": "lastMessageChanged",
+                    "read": "lastMessage",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QString",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 2,
+                    "name": "history",
+                    "notify": "historyChanged",
+                    "read": "history",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QVariantList",
+                    "user": false
+                }
+            ],
+            "qualifiedClassName": "Login::LoginEngine",
+            "signals": [
+                {
+                    "access": "public",
+                    "name": "busyChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "lastMessageChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "historyChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "result",
+                            "type": "QVariantMap"
+                        }
+                    ],
+                    "name": "loginResultReady",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "results",
+                            "type": "QVariantList"
+                        }
+                    ],
+                    "name": "batchFinished",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "quitRequested",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "LoginEngine.h",
+    "outputRevision": 68
+}

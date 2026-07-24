@@ -1,0 +1,20 @@
+<RCC>
+  <qresource prefix="/AutoLogin/">
+    <file alias="src/qml/Main.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/Main.qml</file>
+    <file alias="src/qml/components/Theme.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/components/Theme.qml</file>
+    <file alias="src/qml/components/UiCard.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/components/UiCard.qml</file>
+    <file alias="src/qml/components/UiButton.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/components/UiButton.qml</file>
+    <file alias="src/qml/components/UiComboBox.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/components/UiComboBox.qml</file>
+    <file alias="src/qml/components/UiSwitch.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/components/UiSwitch.qml</file>
+    <file alias="src/qml/components/UiCheckBox.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/components/UiCheckBox.qml</file>
+    <file alias="src/qml/components/UiTextField.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/components/UiTextField.qml</file>
+    <file alias="src/qml/components/AppSidebar.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/components/AppSidebar.qml</file>
+    <file alias="src/qml/components/AppHeader.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/components/AppHeader.qml</file>
+    <file alias="src/qml/pages/HomePage.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/pages/HomePage.qml</file>
+    <file alias="src/qml/pages/SiteManagerPage.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/pages/SiteManagerPage.qml</file>
+    <file alias="src/qml/pages/LoginPage.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/pages/LoginPage.qml</file>
+    <file alias="src/qml/pages/NetworkPage.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/pages/NetworkPage.qml</file>
+    <file alias="src/qml/pages/SettingsPage.qml">/home/a/Yuan/Code/QT_learn/AutoLogin/src/qml/pages/SettingsPage.qml</file>
+  </qresource>
+</RCC>
+

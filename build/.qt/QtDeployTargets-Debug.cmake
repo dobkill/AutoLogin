@@ -1,3 +1,0 @@
-set(__QT_DEPLOY_TARGET_appAutoLogin_FILE C:/Users/a/Desktop/Code/Qt/AutoLogin/build/Debug/appAutoLogin.exe)
-set(__QT_DEPLOY_TARGET_appAutoLogin_TYPE EXECUTABLE)
-set(__QT_DEPLOY_TARGET_appAutoLogin_RUNTIME_DLLS F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6QuickControls2d.dll;F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6QuickTemplates2d.dll;F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6Quickd.dll;F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6OpenGLd.dll;F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6QmlMetad.dll;F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6QmlWorkerScriptd.dll;F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6Guid.dll;F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6QmlModelsd.dll;F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6Qmld.dll;F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6Networkd.dll;F:/APP/Qt/6.11.1/msvc2022_64/bin/Qt6Cored.dll)

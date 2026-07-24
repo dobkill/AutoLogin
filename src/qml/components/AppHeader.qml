@@ -47,7 +47,7 @@ Rectangle {
         InfoChip {
             Layout.maximumWidth: 330
             icon: "\u25A3"
-            text: "以太网 1 / Intel Ethernet / 192.168.1.20"
+            text: appController.primaryNetworkLabel
             accent: theme.accent
         }
 
@@ -81,7 +81,12 @@ Rectangle {
                 symbol: "\u00D7"
                 danger: true
                 symbolSize: 19
-                onClicked: Qt.quit()
+                onClicked: {
+                    if (appController.settings.minimizeToTray)
+                        Window.window.showMinimized()
+                    else
+                        Qt.quit()
+                }
             }
         }
     }

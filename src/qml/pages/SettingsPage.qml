@@ -6,9 +6,131 @@ import "../components"
 Rectangle {
     id: settingsPage
 
+    property string logPath: "./logs"
+    property string dataPath: "./data"
+
     color: theme.page
 
     Theme { id: theme }
+
+    Popup {
+        id: pathDialog
+
+        property string target: "logs"
+
+        modal: true
+        focus: true
+        width: Math.min(settingsPage.width - 48, 520)
+        x: Math.round((settingsPage.width - width) / 2)
+        y: Math.round((settingsPage.height - height) / 2)
+        padding: 0
+
+        background: Rectangle {
+            radius: theme.radius * 1.4
+            color: theme.surface
+            border.color: theme.border
+            border.width: 1
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 18
+            spacing: 14
+
+            Text {
+                text: pathDialog.target === "logs" ? "设置日志目录" : "设置数据目录"
+                font.pixelSize: 16
+                font.weight: Font.Bold
+                font.family: theme.fontFamily
+                color: theme.text
+            }
+
+            UiTextField {
+                id: pathInput
+                Layout.fillWidth: true
+                placeholder: "/path/to/directory"
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Item { Layout.fillWidth: true }
+
+                UiButton {
+                    text: "取消"
+                    variant: "secondary"
+                    minimumWidth: 82
+                    onClicked: pathDialog.close()
+                }
+
+                UiButton {
+                    text: "确定"
+                    variant: "primary"
+                    minimumWidth: 82
+                    onClicked: {
+                        if (pathDialog.target === "logs")
+                            settingsPage.logPath = pathInput.text
+                        else
+                            settingsPage.dataPath = pathInput.text
+                        pathDialog.close()
+                    }
+                }
+            }
+        }
+    }
+
+    Connections {
+        target: appController
+        function onSettingsChanged() {
+            settingsPage.loadSettings()
+        }
+    }
+
+    Component.onCompleted: loadSettings()
+
+    function themeIndex(themeName) {
+        if (themeName === "dark")
+            return 1
+        if (themeName === "system")
+            return 2
+        return 0
+    }
+
+    function languageIndex(languageName) {
+        return languageName === "en" ? 1 : 0
+    }
+
+    function themeValue(index) {
+        return index === 1 ? "dark" : (index === 2 ? "system" : "light")
+    }
+
+    function languageValue(index) {
+        return index === 1 ? "en" : "zh"
+    }
+
+    function loadSettings() {
+        var s = appController.settings
+        autoStartSwitch.checked = s.autoStart
+        autoLoginSwitch.checked = s.autoLogin
+        traySwitch.checked = s.minimizeToTray
+        logPath = s.logDirectory
+        dataPath = s.dataDirectory
+        themeCombo.currentIndex = themeIndex(s.theme)
+        languageCombo.currentIndex = languageIndex(s.language)
+    }
+
+    function saveSettings() {
+        appController.saveSettings({
+            autoStart: autoStartSwitch.checked,
+            autoLogin: autoLoginSwitch.checked,
+            minimizeToTray: traySwitch.checked,
+            logDirectory: logPath,
+            dataDirectory: dataPath,
+            theme: themeValue(themeCombo.currentIndex),
+            language: languageValue(languageCombo.currentIndex)
+        })
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -32,10 +154,12 @@ Rectangle {
                 }
 
                 Text {
-                    text: "偏好、路径与应用信息"
+                    text: appController.lastMessage || "偏好、路径与应用信息"
                     font.pixelSize: 12
                     font.family: theme.fontFamily
                     color: theme.textSoft
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
                 }
             }
 
@@ -43,12 +167,14 @@ Rectangle {
                 text: "恢复默认"
                 variant: "secondary"
                 minimumWidth: 92
+                onClicked: appController.resetSettings()
             }
 
             UiButton {
                 text: "保存设置"
                 variant: "primary"
                 minimumWidth: 92
+                onClicked: settingsPage.saveSettings()
             }
         }
 
@@ -75,7 +201,7 @@ Rectangle {
                     SettingRow {
                         title: "开机自启"
                         description: "系统启动后自动运行"
-                        UiSwitch { checked: false }
+                        UiSwitch { id: autoStartSwitch }
                     }
 
                     Separator {}
@@ -83,15 +209,15 @@ Rectangle {
                     SettingRow {
                         title: "自动登录"
                         description: "启动后执行已启用站点"
-                        UiSwitch { checked: false }
+                        UiSwitch { id: autoLoginSwitch }
                     }
 
                     Separator {}
 
                     SettingRow {
-                        title: "最小化到托盘"
-                        description: "关闭窗口时保留后台任务"
-                        UiSwitch { checked: false }
+                        title: "最小化到后台"
+                        description: "关闭窗口时最小化而不是退出"
+                        UiSwitch { id: traySwitch }
                     }
 
                     SectionTitle {
@@ -101,14 +227,28 @@ Rectangle {
 
                     PathSettingRow {
                         title: "日志目录"
-                        path: "./logs"
+                        path: settingsPage.logPath
+                        onPathEdited: function(value) { settingsPage.logPath = value }
+                        onChooseClicked: {
+                            pathDialog.target = "logs"
+                            pathInput.text = settingsPage.logPath
+                            pathDialog.open()
+                        }
+                        onOpenClicked: appController.openPath(settingsPage.logPath)
                     }
 
                     Separator {}
 
                     PathSettingRow {
                         title: "数据目录"
-                        path: "./data"
+                        path: settingsPage.dataPath
+                        onPathEdited: function(value) { settingsPage.dataPath = value }
+                        onChooseClicked: {
+                            pathDialog.target = "data"
+                            pathInput.text = settingsPage.dataPath
+                            pathDialog.open()
+                        }
+                        onOpenClicked: appController.openPath(settingsPage.dataPath)
                     }
 
                     SectionTitle {
@@ -120,6 +260,7 @@ Rectangle {
                         title: "主题"
                         description: "界面颜色模式"
                         UiComboBox {
+                            id: themeCombo
                             Layout.preferredWidth: 170
                             model: ["浅色", "深色", "跟随系统"]
                         }
@@ -131,6 +272,7 @@ Rectangle {
                         title: "语言"
                         description: "界面显示语言"
                         UiComboBox {
+                            id: languageCombo
                             Layout.preferredWidth: 170
                             model: ["中文", "English"]
                         }
@@ -181,6 +323,11 @@ Rectangle {
                                 color: theme.textSoft
                             }
                         }
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 16
                     }
                 }
             }
@@ -245,6 +392,9 @@ Rectangle {
 
         property string title: ""
         property string path: ""
+        signal chooseClicked()
+        signal openClicked()
+        signal pathEdited(string value)
 
         Layout.fillWidth: true
         Layout.preferredHeight: 58
@@ -256,41 +406,30 @@ Rectangle {
             font.weight: Font.DemiBold
             font.family: theme.fontFamily
             color: theme.text
-            Layout.fillWidth: true
+            Layout.preferredWidth: 120
             elide: Text.ElideRight
         }
 
-        Rectangle {
-            Layout.preferredWidth: 360
-            Layout.preferredHeight: theme.controlHeight
-            radius: theme.radius
-            color: theme.surfaceMuted
-            border.color: theme.border
-            border.width: 1
+        UiTextField {
+            Layout.fillWidth: true
+            text: pathRow.path
+            onTextChanged: pathRow.pathEdited(text)
+        }
 
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 4
-                spacing: 8
+        UiButton {
+            text: "打开"
+            variant: "secondary"
+            compact: true
+            minimumWidth: 58
+            onClicked: pathRow.openClicked()
+        }
 
-                Text {
-                    text: pathRow.path
-                    font.pixelSize: 13
-                    font.family: theme.fontFamily
-                    color: theme.text
-                    elide: Text.ElideMiddle
-                    verticalAlignment: Text.AlignVCenter
-                    Layout.fillWidth: true
-                }
-
-                UiButton {
-                    text: "选择"
-                    variant: "secondary"
-                    compact: true
-                    minimumWidth: 58
-                }
-            }
+        UiButton {
+            text: "选择"
+            variant: "secondary"
+            compact: true
+            minimumWidth: 58
+            onClicked: pathRow.chooseClicked()
         }
     }
 

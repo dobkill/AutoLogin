@@ -188,7 +188,7 @@ Rectangle {
                         Layout.preferredWidth: 10
                         Layout.preferredHeight: 10
                         radius: 5
-                        color: theme.success
+                        color: appController.busy ? theme.warning : (appController.networkStatus.isOnline ? theme.success : theme.danger)
                     }
 
                     ColumnLayout {
@@ -196,7 +196,7 @@ Rectangle {
                         spacing: 1
 
                         Text {
-                            text: "服务运行中"
+                            text: appController.busy ? "任务执行中" : (appController.networkStatus.isOnline ? "网络已连接" : "网络未连接")
                             font.pixelSize: 12
                             font.weight: Font.DemiBold
                             font.family: theme.fontFamily
@@ -204,7 +204,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: "v1.0.0"
+                            text: appController.networkStatus.primaryIP || "v1.0.0"
                             font.pixelSize: 11
                             font.family: theme.fontFamily
                             color: theme.textSoft

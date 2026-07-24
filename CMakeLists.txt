@@ -7,13 +7,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 6.8 REQUIRED COMPONENTS Quick QuickControls2)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Quick QuickControls2 Network Sql Concurrent)
+find_package(Qt6 6.2 QUIET COMPONENTS WebEngineCore)
 
-qt_standard_project_setup(REQUIRES 6.8)
+if(COMMAND qt_standard_project_setup)
+    qt_standard_project_setup(REQUIRES 6.2)
+endif()
 
 # C++ 可执行文件
 qt_add_executable(appAutoLogin
     src/main.cc
+    include/Datas/Datas.h
+    src/Datas/Datas.cpp
+    include/network_service/NetworkService.h
+    src/network_service/NetworkService.cpp
+    include/login_engine/LoginEngine.h
+    src/login_engine/LoginEngine.cpp
+    include/app/AppController.h
+    src/app/AppController.cpp
+)
+
+target_include_directories(appAutoLogin
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # QML 模块 — 所有 QML 文件在此注册
@@ -47,7 +63,15 @@ target_link_libraries(appAutoLogin
     PRIVATE
         Qt6::Quick
         Qt6::QuickControls2
+        Qt6::Network
+        Qt6::Sql
+        Qt6::Concurrent
 )
+
+if(Qt6WebEngineCore_FOUND)
+    target_compile_definitions(appAutoLogin PRIVATE AUTOLOGIN_WITH_WEBENGINE)
+    target_link_libraries(appAutoLogin PRIVATE Qt6::WebEngineCore)
+endif()
 
 include(GNUInstallDirs)
 install(TARGETS appAutoLogin

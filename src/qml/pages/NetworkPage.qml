@@ -6,6 +6,9 @@ import "../components"
 Rectangle {
     id: networkPage
 
+    property var cards: appController.networkCards
+    property var selectedCard: cards.length > 0 ? cards[Math.max(0, Math.min(cardList.currentIndex, cards.length - 1))] : ({})
+
     color: theme.page
 
     Theme { id: theme }
@@ -32,11 +35,17 @@ Rectangle {
                 }
 
                 Text {
-                    text: "5 个接口，4 个可用，默认出口为以太网 1"
+                    text: cards.length + " 个接口，默认出口为 " + appController.primaryNetworkLabel
                     font.pixelSize: 12
                     font.family: theme.fontFamily
                     color: theme.textSoft
                 }
+            }
+
+            StatusBadge {
+                Layout.preferredWidth: 96
+                text: appController.networkStatus.stateText
+                ok: appController.networkStatus.isOnline
             }
 
             UiButton {
@@ -44,6 +53,7 @@ Rectangle {
                 icon: "\u21BB"
                 variant: "primary"
                 minimumWidth: 104
+                onClicked: appController.scanNetworkCards()
             }
 
             UiButton {
@@ -51,6 +61,7 @@ Rectangle {
                 icon: "\u21BB"
                 variant: "secondary"
                 minimumWidth: 104
+                onClicked: appController.refreshAll()
             }
         }
 
@@ -85,7 +96,7 @@ Rectangle {
                             TableHead { text: "MAC 地址"; Layout.preferredWidth: 158 }
                             TableHead { text: "状态"; Layout.preferredWidth: 92 }
                             TableHead { text: "默认"; Layout.preferredWidth: 54 }
-                            TableHead { text: "可用性"; Layout.preferredWidth: 92 }
+                            TableHead { text: "绑定"; Layout.preferredWidth: 92 }
                         }
                     }
 
@@ -102,19 +113,12 @@ Rectangle {
                         clip: true
                         currentIndex: 0
                         spacing: 0
-
-                        model: ListModel {
-                            ListElement { name: "以太网 1 (Intel Ethernet)"; cardType: "有线"; ip: "192.168.1.20"; mac: "10:1C:2B:3A:4D:5E"; connected: true; isDefault: true; available: true }
-                            ListElement { name: "Wi-Fi (Intel Wireless-AC 9560)"; cardType: "无线"; ip: "192.168.31.15"; mac: "3C:52:82:7D:6E:11"; connected: true; isDefault: false; available: true }
-                            ListElement { name: "蓝牙网络连接"; cardType: "无线"; ip: "-"; mac: "7C:5B:90:12:34:56"; connected: false; isDefault: false; available: false }
-                            ListElement { name: "VMware Network Adapter VMnet1"; cardType: "有线"; ip: "192.168.96.1"; mac: "00:50:56:C0:00:01"; connected: true; isDefault: false; available: true }
-                            ListElement { name: "VMware Network Adapter VMnet8"; cardType: "有线"; ip: "192.168.239.1"; mac: "00:50:56:C0:00:08"; connected: true; isDefault: false; available: true }
-                        }
+                        model: networkPage.cards
 
                         delegate: Rectangle {
                             width: cardList.width
                             height: 48
-                            color: cardList.currentIndex === index ? theme.primarySoft : (rowMouse.containsMouse ? "#f5f9ff" : (index % 2 === 0 ? "#fbfcfe" : theme.surface))
+                            color: cardList.currentIndex === index ? theme.primarySoft : (rowMouse.containsMouse ? theme.surfaceStrong : (index % 2 === 0 ? theme.surfaceMuted : theme.surface))
 
                             RowLayout {
                                 anchors.fill: parent
@@ -122,23 +126,23 @@ Rectangle {
                                 anchors.rightMargin: 16
                                 spacing: 0
 
-                                TableCell { text: model.name; strong: true; Layout.fillWidth: true }
-                                TypeBadge { Layout.preferredWidth: 70; text: model.cardType; wired: model.cardType === "有线" }
-                                TableCell { text: model.ip; Layout.preferredWidth: 140 }
-                                TableCell { text: model.mac; muted: true; mono: true; Layout.preferredWidth: 158 }
-                                StatusBadge { Layout.preferredWidth: 92; text: model.connected ? "已连接" : "未连接"; ok: model.connected }
+                                TableCell { text: modelData.name; strong: true; Layout.fillWidth: true }
+                                TypeBadge { Layout.preferredWidth: 70; text: modelData.cardType; wired: modelData.type !== "wireless" }
+                                TableCell { text: modelData.ip; Layout.preferredWidth: 140 }
+                                TableCell { text: modelData.macAddress || "-"; muted: true; mono: true; Layout.preferredWidth: 158 }
+                                StatusBadge { Layout.preferredWidth: 92; text: modelData.connected ? "已连接" : "未连接"; ok: modelData.connected }
 
                                 Text {
-                                    text: model.isDefault ? "\u25C9" : "-"
+                                    text: modelData.isDefault ? "\u25C9" : "-"
                                     font.pixelSize: 14
                                     font.weight: Font.Bold
-                                    color: model.isDefault ? theme.primary : theme.textSoft
+                                    color: modelData.isDefault ? theme.primary : theme.textSoft
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
                                     Layout.preferredWidth: 54
                                 }
 
-                                StatusBadge { Layout.preferredWidth: 92; text: model.available ? "可用" : "不可用"; ok: model.available }
+                                TableCell { text: modelData.boundText; muted: modelData.boundCount === 0; Layout.preferredWidth: 92 }
                             }
 
                             Rectangle {
@@ -157,12 +161,21 @@ Rectangle {
                                 onClicked: cardList.currentIndex = index
                             }
                         }
+
+                        Text {
+                            anchors.centerIn: parent
+                            visible: cardList.count === 0
+                            text: "尚未扫描到网卡"
+                            font.pixelSize: 14
+                            font.family: theme.fontFamily
+                            color: theme.textSoft
+                        }
                     }
                 }
             }
 
             UiCard {
-                Layout.preferredWidth: 324
+                Layout.preferredWidth: 330
                 Layout.fillHeight: true
 
                 ColumnLayout {
@@ -201,10 +214,12 @@ Rectangle {
                             }
 
                             Text {
-                                text: "Intel Ethernet"
+                                text: selectedCard.name || "-"
                                 font.pixelSize: 11
                                 font.family: theme.fontFamily
                                 color: theme.textSoft
+                                elide: Text.ElideRight
+                                Layout.fillWidth: true
                             }
                         }
                     }
@@ -215,26 +230,21 @@ Rectangle {
                         color: theme.borderSoft
                     }
 
-                    DetailRow { label: "网络接口"; value: "以太网 1 (Intel Ethernet)" }
-                    DetailRow { label: "子网掩码"; value: "255.255.255.0" }
-                    DetailRow { label: "网关"; value: "192.168.1.1" }
-                    DetailRow { label: "DNS"; value: "192.168.1.1, 114.114.114.114" }
-                    DetailRow { label: "链路速度"; value: "1.00 Gbps" }
-                    DetailRow { label: "描述"; value: "Intel(R) Ethernet Connection (14) I219-V"; wrap: true }
+                    DetailRow { label: "网络接口"; value: selectedCard.name || "-" }
+                    DetailRow { label: "IP 地址"; value: selectedCard.ip || "-" }
+                    DetailRow { label: "子网掩码"; value: selectedCard.subnetMask || "-" }
+                    DetailRow { label: "网关"; value: selectedCard.gateway || "-" }
+                    DetailRow { label: "DNS"; value: selectedCard.dnsText || "-" ; wrap: true }
+                    DetailRow { label: "MAC"; value: selectedCard.macAddress || "-" }
+                    DetailRow { label: "绑定站点"; value: selectedCard.boundText || "-" }
 
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 1
+                        Layout.preferredHeight: 82
                         Layout.topMargin: 4
-                        color: theme.borderSoft
-                    }
-
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 78
                         radius: theme.radius
-                        color: theme.successSoft
-                        border.color: theme.tint(theme.success, 0.24)
+                        color: selectedCard.available ? theme.successSoft : theme.warningSoft
+                        border.color: selectedCard.available ? theme.tint(theme.success, 0.24) : theme.tint(theme.warning, 0.24)
                         border.width: 1
 
                         ColumnLayout {
@@ -243,15 +253,15 @@ Rectangle {
                             spacing: 4
 
                             Text {
-                                text: "可用于登录任务"
+                                text: selectedCard.available ? "可用于登录任务" : "当前不可用于绑定请求"
                                 font.pixelSize: 13
                                 font.weight: Font.Bold
                                 font.family: theme.fontFamily
-                                color: theme.success
+                                color: selectedCard.available ? theme.success : theme.warning
                             }
 
                             Text {
-                                text: "API 与 WebView 任务将通过该接口发送请求。"
+                                text: selectedCard.available ? "API 请求可绑定到该本地 IP 发起。" : "未连接或缺少 IPv4 地址。"
                                 font.pixelSize: 12
                                 font.family: theme.fontFamily
                                 color: theme.textMuted
@@ -265,9 +275,10 @@ Rectangle {
 
                     UiButton {
                         Layout.fillWidth: true
-                        text: "设为默认出口"
-                        icon: "\u2713"
+                        text: "刷新扫描"
+                        icon: "\u21BB"
                         variant: "secondary"
+                        onClicked: appController.scanNetworkCards()
                     }
                 }
             }
