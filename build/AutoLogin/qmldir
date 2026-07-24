@@ -16,4 +16,5 @@ SiteManagerPage 1.0 src/qml/pages/SiteManagerPage.qml
 LoginPage 1.0 src/qml/pages/LoginPage.qml
 NetworkPage 1.0 src/qml/pages/NetworkPage.qml
 SettingsPage 1.0 src/qml/pages/SettingsPage.qml
+depends QtQuick
 

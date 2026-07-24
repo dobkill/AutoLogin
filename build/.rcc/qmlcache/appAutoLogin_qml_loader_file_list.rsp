@@ -1,3 +1,7 @@
+--resource
+C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/qmake_AutoLogin.qrc
+--resource
+C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc
 /AutoLogin/src/qml/Main.qml
 /AutoLogin/src/qml/components/Theme.qml
 /AutoLogin/src/qml/components/UiCard.qml
