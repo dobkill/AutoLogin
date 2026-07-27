@@ -12,6 +12,7 @@ C:/Users/a/Desktop/Code/Qt/AutoLogin/build/.qt/rcc/appAutoLogin_raw_qml_0.qrc
 /AutoLogin/src/qml/components/UiTextField.qml
 /AutoLogin/src/qml/components/AppSidebar.qml
 /AutoLogin/src/qml/components/AppHeader.qml
+/AutoLogin/src/qml/components/WebRecorderUnavailable.qml
 /AutoLogin/src/qml/pages/HomePage.qml
 /AutoLogin/src/qml/pages/SiteManagerPage.qml
 /AutoLogin/src/qml/pages/LoginPage.qml

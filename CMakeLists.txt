@@ -7,8 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Quick QuickControls2 Network Sql Concurrent)
-find_package(Qt6 6.2 QUIET COMPONENTS WebEngineCore)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Quick QuickControls2 Network Sql Concurrent WebEngineCore WebEngineQuick)
 
 if(COMMAND qt_standard_project_setup)
     qt_standard_project_setup(REQUIRES 6.2)
@@ -47,6 +46,8 @@ qt_add_qml_module(appAutoLogin
         src/qml/components/UiTextField.qml
         src/qml/components/AppSidebar.qml
         src/qml/components/AppHeader.qml
+        src/qml/components/WebRecorderUnavailable.qml
+        src/qml/components/WebRecorderView.qml
         src/qml/pages/HomePage.qml
         src/qml/pages/SiteManagerPage.qml
         src/qml/pages/LoginPage.qml
@@ -66,12 +67,11 @@ target_link_libraries(appAutoLogin
         Qt6::Network
         Qt6::Sql
         Qt6::Concurrent
+        Qt6::WebEngineCore
+        Qt6::WebEngineQuick
 )
 
-if(Qt6WebEngineCore_FOUND)
-    target_compile_definitions(appAutoLogin PRIVATE AUTOLOGIN_WITH_WEBENGINE)
-    target_link_libraries(appAutoLogin PRIVATE Qt6::WebEngineCore)
-endif()
+target_compile_definitions(appAutoLogin PRIVATE AUTOLOGIN_WITH_WEBENGINE)
 
 include(GNUInstallDirs)
 install(TARGETS appAutoLogin

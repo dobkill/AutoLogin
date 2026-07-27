@@ -11,6 +11,7 @@ UiCheckBox 1.0 src/qml/components/UiCheckBox.qml
 UiTextField 1.0 src/qml/components/UiTextField.qml
 AppSidebar 1.0 src/qml/components/AppSidebar.qml
 AppHeader 1.0 src/qml/components/AppHeader.qml
+WebRecorderUnavailable 1.0 src/qml/components/WebRecorderUnavailable.qml
 HomePage 1.0 src/qml/pages/HomePage.qml
 SiteManagerPage 1.0 src/qml/pages/SiteManagerPage.qml
 LoginPage 1.0 src/qml/pages/LoginPage.qml

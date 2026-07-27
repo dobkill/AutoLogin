@@ -23,6 +23,7 @@ class AppController : public QObject {
     Q_PROPERTY(QVariantMap summary READ summary NOTIFY summaryChanged)
     Q_PROPERTY(QVariantList loginHistory READ loginHistory NOTIFY loginHistoryChanged)
     Q_PROPERTY(QStringList networkCardChoices READ networkCardChoices NOTIFY networkCardsChanged)
+    Q_PROPERTY(bool webEngineAvailable READ webEngineAvailable CONSTANT)
 
 public:
     explicit AppController(QObject *parent = nullptr);
@@ -41,6 +42,7 @@ public:
     QVariantMap summary() const;
     QVariantList loginHistory() const;
     QStringList networkCardChoices() const;
+    bool webEngineAvailable() const;
 
     Q_INVOKABLE void refreshAll();
     Q_INVOKABLE void scanNetworkCards();

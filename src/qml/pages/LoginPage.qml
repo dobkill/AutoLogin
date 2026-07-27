@@ -14,6 +14,11 @@ Rectangle {
     property string webId: ""
     property string localMessage: ""
     property bool ready: false
+    property bool recorderVisible: false
+    property bool recorderRecording: false
+    property string recorderMessage: ""
+    property int recorderUrlIndex: 1
+    property string pendingRecorderUrl: ""
 
     color: theme.page
 
@@ -206,6 +211,74 @@ Rectangle {
             return false
         }
         return true
+    }
+
+    function normalizedRecorderUrl(value) {
+        var text = String(value || "").trim()
+        if (text.length === 0)
+            return ""
+        if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(text))
+            return "https://" + text
+        return text
+    }
+
+    function ensureWebUrl(url) {
+        var text = normalizedRecorderUrl(url)
+        if (text.length === 0)
+            return 1
+        for (var i = 0; i < webUrls.count; ++i) {
+            if (String(webUrls.get(i).url) === text)
+                return i + 1
+        }
+        webUrls.append({ url: text })
+        return webUrls.count
+    }
+
+    function startRecorder() {
+        var target = webRecorderUrl.text.length > 0 ? webRecorderUrl.text : (webUrls.count > 0 ? webUrls.get(0).url : "")
+        target = normalizedRecorderUrl(target)
+        if (target.length === 0) {
+            recorderMessage = "请输入要录制的登录页 URL"
+            return
+        }
+
+        recorderUrlIndex = ensureWebUrl(target)
+        webRecorderUrl.text = target
+        recorderVisible = true
+        recorderRecording = true
+        recorderMessage = "正在打开录制页面..."
+        pendingRecorderUrl = target
+        if (webRecorderLoader.item)
+            webRecorderLoader.item.open(target)
+    }
+
+    function stopRecorder() {
+        recorderRecording = false
+        recorderMessage = "录制已暂停，可继续手动调整步骤"
+    }
+
+    function appendRecorderEvent(event) {
+        var xpath = String(event.xpath || "").trim()
+        if (xpath.length === 0)
+            return
+
+        var urlIndex = ensureWebUrl(event.url || webRecorderUrl.text)
+        var opType = event.type === "input" ? "input" : "click"
+        var opValue = opType === "input" ? String(event.value || "") : ""
+        var waitMs = opType === "input" ? 300 : 500
+
+        if (webSteps.count > 0) {
+            var last = webSteps.get(webSteps.count - 1)
+            if (Number(last.urlIndex) === urlIndex && last.xpath === xpath && last.opType === opType) {
+                if (opType === "input")
+                    webSteps.setProperty(webSteps.count - 1, "opValue", opValue)
+                recorderMessage = "已更新最后一步：" + opType + " " + xpath
+                return
+            }
+        }
+
+        webSteps.append({ urlIndex: urlIndex, xpath: xpath, opType: opType, opValue: opValue, waitMs: waitMs })
+        recorderMessage = "已录制 " + webSteps.count + " 个步骤：" + opType + " " + xpath
     }
 
     ColumnLayout {
@@ -429,6 +502,91 @@ Rectangle {
                         spacing: 7
                         FieldLabel { text: "启用自动登录" }
                         UiSwitch { id: webEnabled }
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+
+                    FieldLabel {
+                        text: "流程录制"
+                        Layout.fillWidth: true
+                    }
+
+                    UiButton {
+                        text: recorderRecording ? "重新打开" : "打开录制"
+                        icon: "●"
+                        variant: "secondary"
+                        compact: true
+                        onClicked: startRecorder()
+                    }
+
+                    UiButton {
+                        text: "暂停"
+                        variant: "secondary"
+                        compact: true
+                        enabled: recorderRecording
+                        onClicked: stopRecorder()
+                    }
+
+                    UiButton {
+                        text: "添加等待"
+                        variant: "secondary"
+                        compact: true
+                        onClicked: webSteps.append({ urlIndex: recorderUrlIndex, xpath: "", opType: "wait", opValue: "", waitMs: 1000 })
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    UiTextField {
+                        id: webRecorderUrl
+                        Layout.fillWidth: true
+                        text: webUrls.count > 0 ? webUrls.get(0).url : ""
+                        placeholder: "https://portal.example.com/login"
+                        prefix: "录制 URL"
+                    }
+
+                    Text {
+                        Layout.preferredWidth: 340
+                        text: recorderMessage.length > 0 ? recorderMessage : "录制支持输入、点击；回车提交建议改为点击登录按钮。"
+                        font.pixelSize: 12
+                        font.family: theme.fontFamily
+                        color: theme.textSoft
+                        elide: Text.ElideRight
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: recorderVisible ? 300 : 0
+                    visible: recorderVisible
+                    radius: theme.radius
+                    color: theme.surfaceMuted
+                    border.color: theme.borderSoft
+                    border.width: 1
+                    clip: true
+
+                    Loader {
+                        id: webRecorderLoader
+                        anchors.fill: parent
+                        anchors.margins: 1
+                        source: appController.webEngineAvailable ? "../components/WebRecorderView.qml" : "../components/WebRecorderUnavailable.qml"
+
+                        onLoaded: {
+                            item.recording = Qt.binding(function() { return recorderRecording })
+                            item.messageChanged.connect(function() { recorderMessage = item.message })
+                            item.eventCaptured.connect(appendRecorderEvent)
+                            item.pageUrlChanged.connect(function(pageUrl) {
+                                webRecorderUrl.text = pageUrl
+                                recorderUrlIndex = ensureWebUrl(pageUrl)
+                            })
+                            if (pendingRecorderUrl.length > 0)
+                                item.open(pendingRecorderUrl)
+                        }
                     }
                 }
 

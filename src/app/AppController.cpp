@@ -215,6 +215,15 @@ QStringList AppController::networkCardChoices() const
     return choices;
 }
 
+bool AppController::webEngineAvailable() const
+{
+#ifdef AUTOLOGIN_WITH_WEBENGINE
+    return true;
+#else
+    return false;
+#endif
+}
+
 void AppController::refreshAll()
 {
     m_networkService->refreshNetworkStatus();
